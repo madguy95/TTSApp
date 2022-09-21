@@ -521,7 +521,7 @@ export default class AppPlay extends React.Component {
       <View style={styles.container}>
         <View />
         <View style={styles.nameContainer}>
-          <Text style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+          <Text style={[styles.text]}>
             {this.state.playbackInstanceName}
           </Text>
         </View>
@@ -548,7 +548,7 @@ export default class AppPlay extends React.Component {
               style={[
                 styles.text,
                 styles.buffering,
-                {fontFamily: 'cutive-mono-regular'},
+                // {fontFamily: 'cutive-mono-regular'},
               ]}>
               {this.state.isBuffering ? BUFFERING_STRING : ''}
             </Text>
@@ -556,7 +556,7 @@ export default class AppPlay extends React.Component {
               style={[
                 styles.text,
                 styles.timestamp,
-                {fontFamily: 'cutive-mono-regular'},
+                // {fontFamily: 'cutive-mono-regular'},
               ]}>
               {this._getTimestamp()}
             </Text>
@@ -655,7 +655,7 @@ export default class AppPlay extends React.Component {
               this._trySetRate(1.0, this.state.shouldCorrectPitch)
             }>
             <View style={styles.button}>
-              <Text style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+              <Text style={[styles.text,]}>
                 Rate:
               </Text>
             </View>
@@ -672,7 +672,7 @@ export default class AppPlay extends React.Component {
             style={styles.wrapper}
             onPress={this._onPitchCorrectionPressed}>
             <View style={styles.button}>
-              <Text style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+              <Text style={[styles.text]}>
                 PC: {this.state.shouldCorrectPitch ? 'yes' : 'no'}
               </Text>
             </View>
@@ -707,7 +707,7 @@ export default class AppPlay extends React.Component {
                 onPress={this._onPosterPressed}>
                 <View style={styles.button}>
                   <Text
-                    style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+                    style={[styles.text]}>
                     Poster: {this.state.poster ? 'yes' : 'no'}
                   </Text>
                 </View>
@@ -719,7 +719,7 @@ export default class AppPlay extends React.Component {
                 onPress={this._onFullscreenPressed}>
                 <View style={styles.button}>
                   <Text
-                    style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+                    style={[styles.text]}>
                     Fullscreen
                   </Text>
                 </View>
@@ -739,7 +739,7 @@ export default class AppPlay extends React.Component {
                 onPress={this._onUseNativeControlsPressed}>
                 <View style={styles.button}>
                   <Text
-                    style={[styles.text, {fontFamily: 'cutive-mono-regular'}]}>
+                    style={[styles.text]}>
                     Native Controls:{' '}
                     {this.state.useNativeControls ? 'yes' : 'no'}
                   </Text>
