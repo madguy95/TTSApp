@@ -24,7 +24,7 @@ import Sound from 'react-native-sound';
 import Slider from '@react-native-community/slider';
 
 //  import { MaterialIcons } from "@expo/vector-icons";
-// Sound.setCategory('Playback');
+Sound.setCategory('Playback');
 
 class Icon {
   constructor(module, width, height) {

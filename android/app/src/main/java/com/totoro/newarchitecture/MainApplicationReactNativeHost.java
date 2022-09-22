@@ -1,4 +1,4 @@
-package com.ttsproject.newarchitecture;
+package com.totoro.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.ttsproject.BuildConfig;
-import com.ttsproject.newarchitecture.components.MainComponentsRegistry;
-import com.ttsproject.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.totoro.BuildConfig;
+import com.totoro.newarchitecture.components.MainComponentsRegistry;
+import com.totoro.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
