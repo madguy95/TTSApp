@@ -302,12 +302,20 @@ PODS:
   - React-jsinspector (0.70.1)
   - React-logger (0.70.1):
     - glog
+  - react-native-safe-area-context (4.3.4):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - ReactCommon/turbomodule/core
   - react-native-slider (4.3.1):
     - React-Core
   - react-native-video (5.2.1):
     - React-Core
     - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
+    - React-Core
+  - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.70.1)
   - React-RCTActionSheet (0.70.1):
@@ -375,10 +383,19 @@ PODS:
     - React-jsi (= 0.70.1)
     - React-logger (= 0.70.1)
     - React-perflogger (= 0.70.1)
+  - RNCAsyncStorage (1.17.10):
+    - React-Core
+  - RNScreens (3.17.0):
+    - React-Core
+    - React-RCTImage
   - RNSound (0.11.2):
     - React-Core
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
+    - React-Core
+  - RNSVG (13.2.0):
+    - React-Core
+  - RNVectorIcons (9.2.0):
     - React-Core
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
@@ -432,8 +449,10 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -446,7 +465,11 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSound (from `../node_modules/react-native-sound`)
+  - RNSVG (from `../node_modules/react-native-svg`)
+  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -510,10 +533,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -538,8 +565,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   RNSound:
     :path: "../node_modules/react-native-sound"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
+  RNVectorIcons:
+    :path: "../node_modules/react-native-vector-icons"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -578,8 +613,10 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 47201924064085223b63ec7e3ee9fd40ad8508e8
   React-jsinspector: 1363be638eccfe1aea1b10dd42e632b0397e5ec8
   React-logger: 7bd569e3857d74ed412ce0a5c51f421ff7d4ca7f
+  react-native-safe-area-context: dfe5aa13bee37a0c7e8059d14f72ffc076d120e9
   react-native-slider: d3ae4270cf8a8cc45a69912db0cc42b151560d5a
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
+  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 48c6b363e867d64b682e84f80ca45636bd65e19c
   React-RCTActionSheet: 33c74fe5c754835e3715c300618da9aa2f7203fa
   React-RCTAnimation: 2dbf0120d4d1ab7716079b4180f2ca89c465e46b
@@ -592,7 +629,11 @@ SPEC CHECKSUMS:
   React-RCTVibration: e9164827303fb6a5cf79e4c4af4846a09956b11f
   React-runtimeexecutor: a11d0c2e14140baf1e449264ca9168ae9ae6bbd0
   ReactCommon: 7f86326b92009925c6dcf93f8e825060171c379f
+  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNScreens: 0df01424e9e0ed7827200d6ed1087ddd06c493f9
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
+  RNSVG: 07037623c36f12e41312730622d5f6b3656227ca
+  RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 6c8252e38d65aa387daee699eacf027e055e0b31
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
