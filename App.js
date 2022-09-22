@@ -7,80 +7,25 @@
  */
 
 import React from 'react';
-import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
-  View,
 } from 'react-native';
 
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import AppPlay from './src/views/AppPlay';
+import { NativeBaseProvider } from "native-base";
+import { useContext } from "react";
+// import {
+//   ReferenceDataContext,
+//   ReferenceDataContextProvider,
+// } from "./src/storage/ReferenceDataContext";
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+// import useCachedResources from "./src/hooks/useCachedResources";
+import useColorScheme from "./src/hooks/useColorScheme";
+import Navigation from "./src/navigation";
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            <AppPlay></AppPlay>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -100,5 +45,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+export default function App() {
+  // const isLoadingComplete = useCachedResources();
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
 
-export default App;
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+  
+  return (
+      <NativeBaseProvider>
+        <Navigation colorScheme={colorScheme} />
+      </NativeBaseProvider>
+  );
+}
