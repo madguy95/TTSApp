@@ -138,6 +138,7 @@ export default function DataRaw() {
                   base: '100%',
                 }}
                 value={remoteData}
+                autoCompleteType={undefined}
               />
             </Stack>
           </FormControl>
@@ -187,19 +188,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ddd',
+    backgroundColor: '#FFF8ED',
   },
   subContainer: {
     // flex: 1,
     // width: '100%',
     // height: 800,
-    backgroundColor: '#ddd',
+    backgroundColor: '#FFF8ED',
   },
   view: {
     display: 'flex',
     width: '100%',
     height: '100%',
-    backgroundColor: '#ddd',
+    backgroundColor: '#FFF8ED',
   },
   title: {
     fontSize: 20,

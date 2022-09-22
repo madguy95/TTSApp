@@ -5,11 +5,7 @@
  */
 // import {FontAwesome} from '@expo/vector-icons';
 import * as React from 'react';
-import {
-  Text,
-  View,
-  ColorSchemeName,
-} from 'react-native';
+import {Text, View, ColorSchemeName} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   NavigationContainer,
@@ -19,6 +15,7 @@ import {
 import AppPlay from '../views/AppPlay';
 import Setting from '../views/Setting';
 import DataRaw from '../views/DataRaw';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // import { ColorSchemeName, Pressable } from 'react-native';
@@ -34,21 +31,15 @@ import DataRaw from '../views/DataRaw';
 // import LinkingConfiguration from './LinkingConfiguration';
 
 function HomeScreen() {
-  return (
-    <AppPlay></AppPlay>
-  );
+  return <AppPlay></AppPlay>;
 }
 
 function DataScreen() {
-  return (
-    <DataRaw></DataRaw>
-  );
+  return <DataRaw></DataRaw>;
 }
 
 function SettingsScreen() {
-  return (
-    <Setting></Setting>
-  );
+  return <Setting></Setting>;
 }
 
 const Tab = createBottomTabNavigator();
@@ -58,10 +49,33 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
+
+  const screenOption = ({route}) => ({
+    tabBarIcon: ({focused, color, size}) => {
+      let iconName;
+
+      if (route.name === 'Play') {
+        iconName = focused
+          ? 'musical-notes-outline'
+          : 'musical-notes';
+      } else if (route.name === 'Data') {
+        iconName = focused ? 'browsers-outline' : 'browsers';
+      } else if (route.name === 'Settings') {
+        iconName = focused ? 'settings-outline' : 'settings';
+      }
+
+      // You can return any component that you like here!
+      return <Ionicons name={iconName} size={size} color={color} />;
+    },
+    tabBarActiveTintColor: 'tomato',
+    tabBarInactiveTintColor: 'gray',
+  })
+
   return (
     <NavigationContainer
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={screenOption}>
         <Tab.Screen name="Play" component={HomeScreen} />
         <Tab.Screen name="Data" component={DataScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

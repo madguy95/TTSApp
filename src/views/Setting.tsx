@@ -104,9 +104,9 @@ function ApiRaw() {
           // overflowY: "scroll",
         }}
         nestedScrollEnabled={true}>
-        <Box bg="light.300">
+        <Box>
           <FormControl isRequired>
-            <Stack mx="4">
+            <Stack mx={4}>
               <FormControl.Label>Name Config</FormControl.Label>
               <Input
                 type="text"
@@ -117,7 +117,7 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <Stack mx="4">
+            <Stack mx={4}>
               <FormControl.Label>API url</FormControl.Label>
               <Input
                 type="text"
@@ -129,9 +129,9 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired isInvalid>
-            <Stack mx="4">
+            <Stack mx={4}>
               <Radio.Group
-                name="myRadioGroup"
+                name="radioGroupMethod"
                 accessibilityLabel="favorite number"
                 value={api.method}
                 onChange={nextValue => {
@@ -147,7 +147,7 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <Stack mx="4">
+            <Stack mx={4}>
               <FormControl.Label>API audio url</FormControl.Label>
               <Input
                 type="text"
@@ -159,7 +159,7 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <Stack mx="4">
+            <Stack mx={4}>
               <FormControl.Label>Query String</FormControl.Label>
               <TextArea
                 h={40}
@@ -174,7 +174,7 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <Stack mx="4">
+            <Stack mx={4}>
               <FormControl.Label>Body</FormControl.Label>
               <TextArea
                 h={40}
@@ -189,7 +189,7 @@ function ApiRaw() {
             </Stack>
           </FormControl>
           <FormControl isRequired isReadOnly>
-            <Stack mx="4">
+            <Stack mx={4}>
               <Flex
                 direction="row"
                 mb="2.5"
@@ -213,17 +213,23 @@ function ApiRaw() {
                   isChecked={config[item].id == idSelect}
                   onChange={() => setIdSelect(config[item].id)}
                   value={config[item].id}>
-                    strikeThrough={config[item].id == idSelect}
+                  strikeThrough={config[item].id == idSelect}
                   <Text
                     mx="2"
                     strikeThrough={config[item].id == idSelect}
                     _light={{
-                      color: config[item].id == idSelect ? "gray.400" : "coolGray.800",
+                      color:
+                        config[item].id == idSelect
+                          ? 'gray.400'
+                          : 'coolGray.800',
                     }}
                     _dark={{
-                      color: config[item].id == idSelect ? "gray.400" : "coolGray.50",
-                    }}
-                  >{config[item].name}
+                      color:
+                        config[item].id == idSelect
+                          ? 'gray.400'
+                          : 'coolGray.50',
+                    }}>
+                    {config[item].name}
                   </Text>
                 </Checkbox>
                 <IconButton
@@ -259,13 +265,13 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ddd',
+    backgroundColor: '#FFF8ED',
   },
   view: {
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#ddd',
+    backgroundColor: '#FFF8ED',
   },
   title: {
     fontSize: 20,
