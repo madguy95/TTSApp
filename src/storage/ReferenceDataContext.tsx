@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useEffect, useState } from "react";
 import { Api, ApiDefault } from "../model/api";
 
-const ReferenceDataContext = React.createContext({
+const ReferenceDataContext = createContext({
     data: ApiDefault, 
     setData: (data: Api) => {}
 });

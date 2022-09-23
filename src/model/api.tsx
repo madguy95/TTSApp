@@ -6,7 +6,7 @@ export declare type Api = {
   queryString: string,
   body: string,
   method: string,
-  content: any[]
+  content: []
 }
 
 export const ApiDefault: Api = {

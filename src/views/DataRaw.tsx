@@ -57,7 +57,7 @@ export default function DataRaw() {
   }, [iframeItem]);
 
   async function load() {
-    console.log(inputURL + selector);
+    // console.log(inputURL + selector);
     if (inputURL && selector) {
       loadHtml(inputURL).then(html => {
         const content = getContentInHtml(html, selector);
