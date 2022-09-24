@@ -590,7 +590,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
         <View style={styles.nameContainer}>
           <Text style={[styles.text]}>{this.state.playbackInstanceName}</Text>
         </View>
-        <View style={styles.space} />
+        {/* <View style={styles.space} /> */}
         <View style={styles.videoContainer}>
           <View
             style={{
@@ -616,7 +616,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
           ]}>
           <Slider
             style={styles.playbackSlider}
-            trackImage={ICON_TRACK_1.module}
+            {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})}            
             thumbImage={ICON_THUMB_1.module}
             value={this._getSeekSliderPosition()}
             onSlidingStart={this._onSeekSliderValueChange}
@@ -707,7 +707,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
             </TouchableHighlight>
             <Slider
               style={styles.volumeSlider}
-              trackImage={ICON_TRACK_1.module}
+              {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})} 
               thumbImage={ICON_THUMB_2.module}
               value={1}
               onValueChange={this._onVolumeSliderValueChange}
@@ -740,7 +740,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
           </TouchableHighlight>
           <Slider
             style={styles.rateSlider}
-            trackImage={ICON_TRACK_1.module}
+            {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})} 
             thumbImage={ICON_THUMB_1.module}
             value={this.state.rate / RATE_SCALE}
             onSlidingComplete={this._onRateSliderSlidingComplete}
@@ -875,7 +875,11 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: FONT_SIZE,
-    minHeight: FONT_SIZE,
+    minHeight: FONT_SIZE * 2,
+    lineHeight: FONT_SIZE,
+    overflow: 'hidden',
+    // whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis'
   },
   buffering: {
     textAlign: 'left',
