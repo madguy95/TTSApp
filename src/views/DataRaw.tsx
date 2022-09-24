@@ -18,6 +18,7 @@ import {getContentInHtml, truncate} from '../utils';
 import {loadHtml} from '../helper/APIService';
 import {ReferenceDataContext} from '../storage/ReferenceDataContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const DEFAULT_PAGE = "https://reactjs.org/";
 const DEFAULT_PAGE = 'https://truyenfull.vn/than-dao-dan-ton-606028/chuong-1/';
@@ -52,6 +53,44 @@ export default function DataRaw() {
   };
 
   useEffect(() => {
+    loadHistory();
+    return () => {
+      saveHistory()
+    }
+  }, []);
+
+  async function loadHistory() {
+    try {
+      const uriC = await AsyncStorage.getItem('uriweb');
+      if (uriC) {
+        setInputURl(uriC);
+        setInfo(uriC);
+      }
+      const selectorC = await AsyncStorage.getItem('selector');
+      if (selectorC) {
+        setSelector(selectorC);
+      }
+      console.log('loading' + uriC + " " + selectorC);
+    } catch (e) {
+      console.log('saving error: ' + e);
+    }
+  }
+
+  async function saveHistory() {
+    try {
+      if (inputURL) {
+        await AsyncStorage.setItem('uriweb', inputURL);
+      }
+      if (selector) {
+        await AsyncStorage.setItem('selector', selector);
+      }
+      console.log('Saving' + inputURL + " " + selector);
+    } catch (e) {
+      console.log('saving error: ' + e);
+    }
+  }
+  
+  useEffect(() => {
     if (iframeItem) {
       let arrStr = new Array();
       var y = iframeItem.contentWindow || iframeItem.contentDocument;
@@ -70,6 +109,7 @@ export default function DataRaw() {
           const arrStr = new Array();
           truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
           setData({...data, content: arrStr});
+          saveHistory();
         }
       });
     }
