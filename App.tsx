@@ -13,15 +13,14 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import AppPlay from './src/views/AppPlay';
 import {NativeBaseProvider} from 'native-base';
 import {useContext} from 'react';
-// import {
-//   ReferenceDataContext,
-//   ReferenceDataContextProvider,
-// } from "./src/storage/ReferenceDataContext";
-
-// import useCachedResources from "./src/hooks/useCachedResources";
 import useColorScheme from './src/hooks/useColorScheme';
 import Navigation from './src/navigation';
-import { ReferenceDataContextProvider } from './src/storage/ReferenceDataContext';
+import {ReferenceDataContextProvider} from './src/storage/ReferenceDataContext';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -42,7 +41,6 @@ const styles = StyleSheet.create({
   },
 });
 export default function App() {
-  // const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
@@ -51,10 +49,13 @@ export default function App() {
   };
 
   return (
-    <ReferenceDataContextProvider>
-      <NativeBaseProvider>
-        <Navigation colorScheme={colorScheme} />
-      </NativeBaseProvider>
-    </ReferenceDataContextProvider>
+    <NavigationContainer
+      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ReferenceDataContextProvider>
+        <NativeBaseProvider>
+          <Navigation colorScheme={colorScheme} />
+        </NativeBaseProvider>
+      </ReferenceDataContextProvider>
+    </NavigationContainer>
   );
 }

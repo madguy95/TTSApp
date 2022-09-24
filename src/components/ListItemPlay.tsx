@@ -93,12 +93,12 @@ const  ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
           offset: 50 * index,
           index,
         })}
-        // removeClippedSubviews={true}
+        removeClippedSubviews={true}
         data={dataSource}
         ItemSeparatorComponent={FlatListItemSeparator}
         renderItem={item => renderItem(item)}
         keyExtractor={item => item.id.toString()}
-        // extraData={idSelected}
+        // extraData={dataSource}
       />
     </View>
   );
