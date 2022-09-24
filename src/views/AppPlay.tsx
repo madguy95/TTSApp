@@ -249,7 +249,8 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
       });
       // if (JSON.stringify(arrPlay) != JSON.stringify(this.state.playList)) {
       this.playList = arrPlay;
-      this.setState({playList: arrPlay, content: this.context.data.content});
+      this.index = 0;
+      this.setState({playList: arrPlay, content: this.context.data.content, index: 0});
       // reset lai trang thai player khi load text moi
       this._onStopPressed();
       this._loadNewPlaybackInstance(false);
@@ -306,7 +307,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
       this.playbackInstance = null;
     }
 
-    const uri = this.playList[this.index].uri;
+    const uri = this.playList[this.index]?.uri;
     this.setState({index: this.index});
     if (uri && uri != '') {
       console.log('[Play]', uri);

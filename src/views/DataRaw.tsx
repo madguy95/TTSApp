@@ -7,6 +7,7 @@ import {
   Stack,
   TextArea,
   ScrollView,
+  HStack,
 } from 'native-base';
 import {Platform} from 'react-native';
 import {StyleSheet} from 'react-native';
@@ -16,12 +17,13 @@ import {useRef} from 'react';
 import {getContentInHtml, truncate} from '../utils';
 import {loadHtml} from '../helper/APIService';
 import {ReferenceDataContext} from '../storage/ReferenceDataContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // const DEFAULT_PAGE = "https://reactjs.org/";
 const DEFAULT_PAGE = 'https://truyenfull.vn/than-dao-dan-ton-606028/chuong-1/';
 // const CSS_SELECTOR = "#js-read__content";
 const CSS_SELECTOR = '#chapter-c';
-const MAX_LENGTH_CHARACTER_TRUNC = 200;
+const MAX_LENGTH_CHARACTER_TRUNC = 500;
 export default function DataRaw() {
   const {data, setData} = useContext(ReferenceDataContext);
 
@@ -36,6 +38,8 @@ export default function DataRaw() {
 
   const gridIframe = useRef<HTMLIFrameElement>(null);
   const [iframeItem, setIframeItem] = React.useState<any>();
+
+  const webViewRef = useRef<any>(null);
   // const [html, setHtml] = React.useState<any>("<p>Here I am</p>");
 
   const handleIframe = () => {
@@ -61,13 +65,28 @@ export default function DataRaw() {
     if (inputURL && selector) {
       loadHtml(inputURL).then(html => {
         const content = getContentInHtml(html, selector);
-        setRemoteData(content);
-        const arrStr = new Array();
-        truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
-        setData({...data, content: arrStr});
+        if (content && content != '') {
+          setRemoteData(content);
+          const arrStr = new Array();
+          truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
+          setData({...data, content: arrStr});
+        }
       });
     }
   }
+
+  const goback = () => {
+    webViewRef.current.goBack();
+  };
+
+  const goForward = () => {
+    webViewRef.current.goForward();
+  };
+
+  const reload = () => {
+    setInfo(inputURL);
+    webViewRef.current.reload();
+  };
 
   return (
     <View style={styles.container}>
@@ -79,60 +98,49 @@ export default function DataRaw() {
           // overflowY: "scroll",
         }}>
         <View style={styles.subContainer}>
-          <FormControl isRequired>
-            <Stack mx="4">
-              <FormControl.Label>Trang web url</FormControl.Label>
-              <Input
-                type="text"
-                value={inputURL}
-                onChangeText={inputURL => setInputURl(inputURL)}
-                onSubmitEditing={event => {
-                  setInfo(inputURL);
-                  // setHtml(loadHtml(inputURL));
-                }}
-                placeholder="text"
-              />
-            </Stack>
-            <Stack mx="4">
-              {/* <Flex
-            direction="row"
-            flexWrap={"wrap"}
-            mb="2.5"
-            mt="1.5"
-            _text={{
-              color: 'coolGray.800',
-            }}> */}
-              <FormControl.Label>Query selector</FormControl.Label>
+          <Stack mx="4">
+            {/* <HStack space={3} alignItems="center"> */}
+            <Flex
+              flexWrap="wrap"
+              // flexWrap={'wrap'}
+              mb="2.5"
+              mt="1.5"
+              _text={{
+                color: 'coolGray.800',
+              }}>
+              <Text>Query selector</Text>
               <Input
                 type="text"
                 value={selector}
                 onChangeText={value => setSelector(value)}
                 placeholder="text"
               />
-              <FormControl.Label>Max length</FormControl.Label>
+              <Text>Max length</Text>
               <Input
+                keyboardType="numeric"
                 type="text"
                 value={limitSplit.toString()}
                 onChangeText={value => setLimitSplit(parseInt(value))}
                 placeholder="limit string length to split"
               />
-              {/* </Flex> */}
-            </Stack>
-            <Stack mx="4">
-              <Flex
-                direction="row"
-                mb="2.5"
-                mt="1.5"
-                _text={{
-                  color: 'coolGray.800',
-                }}>
-                <Button onPress={() => load()}>Load</Button>
-                {/* <AudioTrack content={remoteData} /> */}
-              </Flex>
-            </Stack>
-            <Stack mx="4">
+            </Flex>
+            {/* </HStack> */}
+          </Stack>
+          <Stack mx="4">
+            <Flex
+              direction="row"
+              mb="2.5"
+              mt="1.5"
+              _text={{
+                color: 'coolGray.800',
+              }}>
+              <Button onPress={() => load()}>
+                <Ionicons name={'reload-circle'} size={15}>
+                  Load
+                </Ionicons>
+              </Button>
               <TextArea
-                h={40}
+                h={20}
                 placeholder="Text Area Placeholder"
                 w={{
                   base: '100%',
@@ -140,8 +148,22 @@ export default function DataRaw() {
                 value={remoteData}
                 autoCompleteType={undefined}
               />
-            </Stack>
-          </FormControl>
+            </Flex>
+          </Stack>
+          <Stack mx="4"></Stack>
+          <Stack mx="4">
+            <Text>Trang web url</Text>
+            <Input
+              type="text"
+              value={inputURL}
+              onChangeText={inputURL => setInputURl(inputURL)}
+              onSubmitEditing={event => {
+                setInfo(inputURL);
+                // setHtml(loadHtml(inputURL));
+              }}
+              placeholder="text"
+            />
+          </Stack>
         </View>
         {Platform.OS === 'web' ? (
           <iframe
@@ -153,8 +175,38 @@ export default function DataRaw() {
             width={'100%'}
           />
         ) : (
-          <View style={styles.view}>
+          <View style={styles.webview}>
+            <View style={styles.subContainer}>
+              <Flex
+                direction="row"
+                ml="5"
+                // mb="2.5"
+                // mt="1.5"
+                _text={{
+                  color: 'coolGray.800',
+                }}>
+                <Ionicons
+                  name={'arrow-back-outline'}
+                  size={40}
+                  color="grey"
+                  onPress={goback}
+                />
+                <Ionicons
+                  name={'arrow-forward-outline'}
+                  size={40}
+                  color="grey"
+                  onPress={goForward}
+                />
+                <Ionicons
+                  name={'refresh-outline'}
+                  size={35}
+                  color="grey"
+                  onPress={reload}
+                />
+              </Flex>
+            </View>
             <WebView
+              ref={webViewRef}
               source={{uri: info}}
               style={{
                 marginTop: 22,
@@ -194,6 +246,12 @@ const styles = StyleSheet.create({
     // flex: 1,
     // width: '100%',
     // height: 800,
+    backgroundColor: '#FFF8ED',
+  },
+  webview: {
+    display: 'flex',
+    width: '100%',
+    height: 800,
     backgroundColor: '#FFF8ED',
   },
   view: {
