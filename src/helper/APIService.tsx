@@ -9,16 +9,18 @@ export async function callApiGetMp3 (text: string, signal: any, apiInfo: Api): P
             apiInfo.queryString
               .replace(/(\r\n|\n|\r)/gm, "")
               .replace("${textsearch}", text
-              .replace("/\"/i",""))
+              .replace(/['"]+/g,""))
           )
         )
         : "";
+        
       const bodyStr = apiInfo.body
         ? objToQueryString(
           JSON.parse(
             apiInfo.body
               .replace(/(\r\n|\n|\r)/gm, "")
               .replace("${textsearch}", text)
+              .replace(/['"]+/g,"")
           )
         )
         : "";

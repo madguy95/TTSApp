@@ -167,7 +167,7 @@ function DataRaw(props) {
             <Input
               type="text"
               value={inputURL}
-              onChangeText={value => setInputURl(inputURL)}
+              onChangeText={value => setInputURl(value)}
               onSubmitEditing={event => {
                 updateWeb({currentURL: inputURL});
               }}

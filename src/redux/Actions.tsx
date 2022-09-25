@@ -1,6 +1,7 @@
 import {loadHtml} from '../helper/APIService';
 import {getContentInHtml, getNextLinkInHtml, truncate} from '../utils';
 import {CHANGE_WEB_INFO, NOTI_LOAD_NEW} from './ActionType';
+import { URL, URLSearchParams } from 'react-native-url-polyfill';
 
 const MAX_LENGTH_CHARACTER_TRUNC = 500;
 
@@ -11,9 +12,15 @@ export function loadNew(info) {
 export function loadNewData(currentURL, selector, nextSelector, limitSplit) {
   return async dispatch => {
     if (currentURL && selector) {
+      console.log(currentURL)
       const html = await loadHtml(currentURL);
       const content = getContentInHtml(html, selector);
-      const nextURL = getNextLinkInHtml(html, nextSelector);
+      let nextURL = getNextLinkInHtml(html, nextSelector);
+      let domain = new URL(currentURL);
+      if (nextURL && !nextURL.includes('http')) {
+        nextURL = domain.protocol + '//' + domain.hostname + nextURL;
+      }
+      console.log(nextURL)
       if (content && content != '') {
         const arrStr = new Array();
         truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
