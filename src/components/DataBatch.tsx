@@ -22,13 +22,12 @@ export function DataBatch(props: {
   }, [data]);
 
   useEffect(() => {
-    setPlay(props.playList)
+    setPlay(props.playList);
   }, [props.playList]);
 
   useEffect(() => {
     if (!Number.isNaN(props.idSelected) && !isLoading) {
       loadMp3();
-      console.log('Batch processing =>>>=====>>>>>>')
     }
   }, [props.idSelected, playList, apiInfo, isLoading]);
 
@@ -51,10 +50,8 @@ export function DataBatch(props: {
       }
     });
     if (arrPromise.length > 0) {
-      console.log("call")
       setLoading(true);
       Promise.all(arrPromise).then(values => {
-        console.log(values)
         let isChange = false;
         values.forEach((id, index) => {
           if (id) {

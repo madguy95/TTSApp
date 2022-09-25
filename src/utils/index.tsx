@@ -55,3 +55,10 @@ export function truncate(str: string, arrStr: any[], n: number): any {
       return $(selector).text() || "";
     }
   }
+
+  export function getNextLinkInHtml(html: string, selector: string): any {
+    if(html) {
+      const $ = Cheerio.load(html);
+      return $(selector)?.attr('href') || "";
+    }
+  }

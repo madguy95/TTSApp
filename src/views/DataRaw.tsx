@@ -14,63 +14,49 @@ import {StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {Text, View} from '../components/Themed';
 import {useRef} from 'react';
-import {getContentInHtml, truncate} from '../utils';
-import {loadHtml} from '../helper/APIService';
-import {ReferenceDataContext} from '../storage/ReferenceDataContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {loadNew, loadNewData, updateWebInfo} from '../redux/Actions';
+import {connect, useSelector} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
-// const DEFAULT_PAGE = "https://reactjs.org/";
-const DEFAULT_PAGE = 'https://truyenfull.vn/than-dao-dan-ton-606028/chuong-1/';
-// const CSS_SELECTOR = "#js-read__content";
-const CSS_SELECTOR = '#chapter-c';
-const MAX_LENGTH_CHARACTER_TRUNC = 500;
-export default function DataRaw() {
-  const {data, setData} = useContext(ReferenceDataContext);
-
-  const [inputURL, setInputURl] = React.useState(DEFAULT_PAGE);
-  const [info, setInfo] = React.useState(DEFAULT_PAGE);
-
-  const [limitSplit, setLimitSplit] = React.useState(
-    MAX_LENGTH_CHARACTER_TRUNC,
-  );
-  const [remoteData, setRemoteData] = React.useState();
-  const [selector, setSelector] = React.useState(CSS_SELECTOR);
-
+function DataRaw(props) {
+  const {content} = props;
+  const {selector, nextSelector, limitSplit, nextURL, currentURL} = props;
+  const [inputURL, setInputURl] = React.useState(currentURL);
   const gridIframe = useRef<HTMLIFrameElement>(null);
-  const [iframeItem, setIframeItem] = React.useState<any>();
 
   const webViewRef = useRef<any>(null);
-  // const [html, setHtml] = React.useState<any>("<p>Here I am</p>");
-
-  const handleIframe = () => {
-    // const url = gridIframe.current.contentWindow.location.href;
-    // if (gridIframe) {
-    //   setIframeItem(gridIframe?.current);
-    //   var y = (gridIframe?.current.contentWindow || gridIframe?.current.contentDocument);
-    //   console.log(y.location.href)
-    // }
-  };
 
   useEffect(() => {
     loadHistory();
-    return () => {
-      saveHistory()
-    }
+    console.log('load 1 time')
   }, []);
+
+  function updateWeb(obj) {
+    props.actions.updateWebInfo({
+      selector,
+      nextSelector,
+      limitSplit,
+      nextURL,
+      currentURL,
+      ...obj,
+    });
+  }
 
   async function loadHistory() {
     try {
       const uriC = await AsyncStorage.getItem('uriweb');
+      let obj = {}
       if (uriC) {
-        setInputURl(uriC);
-        setInfo(uriC);
+        obj.currentURL = uriC;
       }
       const selectorC = await AsyncStorage.getItem('selector');
       if (selectorC) {
-        setSelector(selectorC);
+        obj.selector = selectorC;
       }
-      console.log('loading' + uriC + " " + selectorC);
+      updateWeb({...obj});
+      console.log('loading' + uriC + ' ' + selectorC);
     } catch (e) {
       console.log('saving error: ' + e);
     }
@@ -78,43 +64,22 @@ export default function DataRaw() {
 
   async function saveHistory() {
     try {
-      if (inputURL) {
-        await AsyncStorage.setItem('uriweb', inputURL);
+      if (currentURL) {
+        await AsyncStorage.setItem('uriweb', currentURL);
       }
       if (selector) {
         await AsyncStorage.setItem('selector', selector);
       }
-      console.log('Saving' + inputURL + " " + selector);
+      console.log('Saving' + currentURL + ' ' + selector);
     } catch (e) {
       console.log('saving error: ' + e);
     }
   }
-  
-  useEffect(() => {
-    if (iframeItem) {
-      let arrStr = new Array();
-      var y = iframeItem.contentWindow || iframeItem.contentDocument;
-      console.log(y);
-      // truncate(iframeItem.contentWindow.document.getElementById('#chapter-c'), arrStr, 200)
-    }
-  }, [iframeItem]);
 
-  async function load() {
-    // console.log(inputURL + selector);
-    if (inputURL && selector) {
-      loadHtml(inputURL).then(html => {
-        const content = getContentInHtml(html, selector);
-        if (content && content != '') {
-          setRemoteData(content);
-          const arrStr = new Array();
-          truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
-          setData({...data, content: arrStr});
-          saveHistory();
-        }
-      });
-    }
-  }
-
+  const onClickLoad = () => {
+    props.actions.loadNewData(currentURL, selector, nextSelector, limitSplit);
+    saveHistory();
+  };
   const goback = () => {
     webViewRef.current.goBack();
   };
@@ -124,7 +89,6 @@ export default function DataRaw() {
   };
 
   const reload = () => {
-    setInfo(inputURL);
     webViewRef.current.reload();
   };
 
@@ -148,19 +112,25 @@ export default function DataRaw() {
               _text={{
                 color: 'coolGray.800',
               }}>
-              <Text>Query selector</Text>
+              <Text>Query selector {props.needLoad ? 'true' : 'false'}</Text>
               <Input
                 type="text"
                 value={selector}
-                onChangeText={value => setSelector(value)}
-                placeholder="text"
+                onChangeText={value => updateWeb({selector: value})}
+                placeholder="css selector get content"
+              />
+              <Input
+                type="text"
+                value={nextSelector}
+                onChangeText={nextSelector => updateWeb({nextSelector: value})}
+                placeholder="css selector get href next link"
               />
               <Text>Max length</Text>
               <Input
                 keyboardType="numeric"
                 type="text"
                 value={limitSplit.toString()}
-                onChangeText={value => setLimitSplit(parseInt(value))}
+                onChangeText={value => updateWeb({limitSplit: parseInt(value)})}
                 placeholder="limit string length to split"
               />
             </Flex>
@@ -174,18 +144,19 @@ export default function DataRaw() {
               _text={{
                 color: 'coolGray.800',
               }}>
-              <Button onPress={() => load()}>
+              <Button onPress={() => onClickLoad()}>
                 <Ionicons name={'reload-circle'} size={15}>
                   Load
                 </Ionicons>
               </Button>
               <TextArea
+                readonly
                 h={20}
                 placeholder="Text Area Placeholder"
                 w={{
                   base: '100%',
                 }}
-                value={remoteData}
+                value={content}
                 autoCompleteType={undefined}
               />
             </Flex>
@@ -196,12 +167,17 @@ export default function DataRaw() {
             <Input
               type="text"
               value={inputURL}
-              onChangeText={inputURL => setInputURl(inputURL)}
+              onChangeText={value => setInputURl(inputURL)}
               onSubmitEditing={event => {
-                setInfo(inputURL);
-                // setHtml(loadHtml(inputURL));
+                updateWeb({currentURL: inputURL});
               }}
-              placeholder="text"
+              placeholder="Current url load web"
+            />
+            <Input
+              readonly
+              type="text"
+              value={nextURL}
+              placeholder="Next url: can be empty"
             />
           </Stack>
         </View>
@@ -209,8 +185,7 @@ export default function DataRaw() {
           <iframe
             id="iframe"
             ref={gridIframe}
-            onLoad={handleIframe}
-            src={info}
+            src={currentURL}
             height={'100%'}
             width={'100%'}
           />
@@ -247,7 +222,7 @@ export default function DataRaw() {
             </View>
             <WebView
               ref={webViewRef}
-              source={{uri: info}}
+              source={{uri: currentURL}}
               style={{
                 marginTop: 22,
                 flex: 1,
@@ -257,8 +232,7 @@ export default function DataRaw() {
               }}
               allowsFullscreenVideo={false}
               onNavigationStateChange={({url, canGoBack}) => {
-                // console.log("url>>>>>>>>", url);
-                setInputURl(url);
+                setInputURl(url)
               }}
               // scrollEnabled={false}
               useWebKit={true}
@@ -271,6 +245,24 @@ export default function DataRaw() {
     </View>
   );
 }
+
+const mapStateToProps = state => ({
+  needLoad: state.reducer.needLoad,
+  content: state.reducer.content,
+  selector: state.reducer.selector,
+  nextSelector: state.reducer.nextSelector,
+  limitSplit: state.reducer.limitSplit,
+  nextURL: state.reducer.nextURL,
+  currentURL: state.reducer.currentURL,
+});
+
+const ActionCreators = Object.assign({}, {loadNew, loadNewData, updateWebInfo});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DataRaw);
 
 const styles = StyleSheet.create({
   container: {

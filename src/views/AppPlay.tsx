@@ -25,7 +25,10 @@ import Slider from '@react-native-community/slider';
 import ListItemPlay from '../components/ListItemPlay';
 import {DataBatch} from '../components/DataBatch';
 import {ReferenceDataContext} from '../storage/ReferenceDataContext';
-import { PlaylistItem } from '../model/api';
+import {PlaylistItem} from '../model/api';
+import {loadNew, loadNewData} from '../redux/Actions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 //  import { MaterialIcons } from "@expo/vector-icons";
 Sound.setCategory('Playback');
@@ -43,17 +46,20 @@ class Icon {
 }
 
 const PlAYLIST = [
-  new PlaylistItem(0,
+  new PlaylistItem(
+    0,
     'Comfort Fit - “Sorry”',
     'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3',
     false,
   ),
-  new PlaylistItem(1,
+  new PlaylistItem(
+    1,
     'Mildred Bailey – “All Of Me”',
     'https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3',
     false,
   ),
-  new PlaylistItem(2,
+  new PlaylistItem(
+    2,
     'Podington Bear - “Rubber Robot”',
     'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3',
     false,
@@ -166,7 +172,7 @@ type MyState = {
   content: [];
   playState: string;
 };
-export default class AppPlay extends React.Component<MyProps, MyState> {
+class AppPlay extends React.Component {
   static contextType = ReferenceDataContext;
   index: number;
   shouldPlayAtEndOfSeek: boolean;
@@ -175,6 +181,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   playList: PlaylistItem[];
   constructor(props: {} | Readonly<{}>) {
     super(props);
+    this.actions = this.props.actions;
     this.index = 0;
     this.shouldPlayAtEndOfSeek = false;
     this.playbackInstance = null;
@@ -236,24 +243,30 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   ): void {
     // console.log(this.context?.data?.content ? 'DidUpdate' : '');
     if (
-      this.context.data.content &&
-      JSON.stringify(this.context.data.content) !=
+      this.props.arrString &&
+      JSON.stringify(this.props.arrString) !=
         JSON.stringify(this.state.content) &&
-      Array.isArray(this.context.data.content)
+      Array.isArray(this.props.arrString) &&
+      this.props.arrString.length > 0
     ) {
-      // console.log(this.context.data.content)
+      // console.log(this.props.arrString);
       const arrPlay = new Array();
       // arrPlay.push(...this.state.playList);
-      this.context.data.content.forEach((item: string, index: number) => {
+      this.props.arrString.forEach((item: string, index: number) => {
         arrPlay.push(new PlaylistItem(index, item, '', false));
       });
       // if (JSON.stringify(arrPlay) != JSON.stringify(this.state.playList)) {
       this.playList = arrPlay;
       this.index = 0;
-      this.setState({playList: arrPlay, content: this.context.data.content, index: 0});
+      this.setState({
+        playList: arrPlay,
+        content: this.props.arrString,
+        index: 0,
+      });
       // reset lai trang thai player khi load text moi
       this._onStopPressed();
-      this._loadNewPlaybackInstance(false);
+      console.log('isplay', this.state.isPlaying)
+      this._loadNewPlaybackInstance(this.state.isPlaying);
       // }
     }
   }
@@ -276,13 +289,22 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
         if (this.state.loopingType == LOOPING_TYPE_ALL) {
           this.setState({playState: 'paused'});
           this.playbackInstance.setCurrentTime(0);
-          this._advanceIndex(true);
-          // lap lai tat ca den cuoi bai se quay ve dau va ko play tiep
-          if (this.index == 0) {
-            this.setState({isPlaying: false});
-            this._updatePlaybackInstanceForIndex(false);
+          if (this.state.isPlaying && this.index == this.playList.length - 1) {
+            this.props.actions.loadNewData(
+              this.props.nextURL,
+              this.props.selector,
+              this.props.nextSelector,
+              this.props.limitSplit,
+            );
           } else {
-            this._updatePlaybackInstanceForIndex(true);
+            this._advanceIndex(true);
+            // lap lai tat ca den cuoi bai se quay ve dau va ko play tiep
+            if (this.index == 0) {
+              this.setState({isPlaying: false});
+              this._updatePlaybackInstanceForIndex(false);
+            } else {
+              this._updatePlaybackInstanceForIndex(true);
+            }
           }
         }
       } else {
@@ -295,8 +317,11 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   callPlay = () => {
     this.setState({
       playState: 'playing',
+      isPlaying: true,
     });
-    this.playbackInstance?.setNumberOfLoops(this.state.loopingType == LOOPING_TYPE_ALL ? 0 : -1);
+    this.playbackInstance?.setNumberOfLoops(
+      this.state.loopingType == LOOPING_TYPE_ALL ? 0 : -1,
+    );
     this.playbackInstance?.setVolume(this.state.volume);
     this.playbackInstance?.setSpeed(this.state.rate);
     this.playbackInstance?.play(this.playComplete);
@@ -305,7 +330,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   async setPlayList(playListArr: any) {
     this.playList = playListArr;
     if (this.playbackInstance == null) {
-      this._loadNewPlaybackInstance(false);
+      this._loadNewPlaybackInstance(this.state.shouldPlay);
     }
   }
 
@@ -316,10 +341,9 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
     }
 
     const uri = this.playList[this.index]?.uri;
-    this.setState({index: this.index});
+    this.setState({index: this.index, isLoading: true, shouldPlay: playing});
     if (uri && uri != '') {
-      console.log('[Play]', uri);
-      this.setState({isLoading: true, shouldPlay: playing});
+      console.log('[Play]', playing, uri);
       this.playbackInstance = await new Sound(uri, undefined, error => {
         this._updateScreenForLoading(false);
         if (error) {
@@ -329,7 +353,9 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
         } else {
           this.setState({
             playbackInstancePosition: 0,
-            playbackInstanceDuration: this.playbackInstance ? this.playbackInstance.getDuration() : 0,
+            playbackInstanceDuration: this.playbackInstance
+              ? this.playbackInstance.getDuration()
+              : 0,
           });
           this.playbackInstance?.setVolume(this.state.volume);
           if (playing) {
@@ -358,7 +384,9 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
     }
   }
 
-  _onReadyForDisplay = (event: { naturalSize: { height: number; width: number; }; }) => {
+  _onReadyForDisplay = (event: {
+    naturalSize: {height: number; width: number};
+  }) => {
     const widestHeight =
       (DEVICE_WIDTH * event.naturalSize.height) / event.naturalSize.width;
     if (widestHeight > VIDEO_CONTAINER_HEIGHT) {
@@ -377,7 +405,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
     }
   };
 
-  _onFullscreenUpdate = (event: { fullscreenUpdate: any; }) => {
+  _onFullscreenUpdate = (event: {fullscreenUpdate: any}) => {
     console.log(
       `FULLSCREEN UPDATE : ${JSON.stringify(event.fullscreenUpdate)}`,
     );
@@ -385,7 +413,8 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
 
   _advanceIndex(forward: boolean) {
     this.index =
-      (this.index + (forward ? 1 : this.state.playList.length - 1)) % this.state.playList.length;
+      (this.index + (forward ? 1 : this.state.playList.length - 1)) %
+      this.state.playList.length;
     this.setState({index: this.index});
   }
 
@@ -453,13 +482,16 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
 
   _onLoopPressed = () => {
     // doi kieu lap
-    const loopingType = this.state.loopingType == LOOPING_TYPE_ONE ? LOOPING_TYPE_ALL : LOOPING_TYPE_ONE;
+    const loopingType =
+      this.state.loopingType == LOOPING_TYPE_ONE
+        ? LOOPING_TYPE_ALL
+        : LOOPING_TYPE_ONE;
     if (this.playbackInstance != null) {
       this.playbackInstance.setNumberOfLoops(
         loopingType == LOOPING_TYPE_ALL ? 0 : -1,
       );
     }
-    this.setState({loopingType: loopingType})
+    this.setState({loopingType: loopingType});
   };
 
   _onVolumeSliderValueChange = (value: any) => {
@@ -515,10 +547,10 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
       this.state.playbackInstancePosition != null &&
       this.state.playbackInstanceDuration != null
     ) {
-      return (
+      const seek =
         this.state.playbackInstancePosition /
-        this.state.playbackInstanceDuration
-      );
+        this.state.playbackInstanceDuration;
+      return isNaN(seek) ? 0 : seek;
     }
     return 0;
   }
@@ -586,8 +618,9 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
 
   _onChangeSelect = (id: any) => {
     this.index = id;
-    this.setState({index: id})
+    this.setState({index: id});
     if (this.playbackInstance != null) {
+      console.log(this.state.shouldPlay);
       this._updatePlaybackInstanceForIndex(this.state.shouldPlay);
     }
   };
@@ -627,7 +660,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
           ]}>
           <Slider
             style={styles.playbackSlider}
-            {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})}            
+            {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
             thumbImage={ICON_THUMB_1.module}
             value={this._getSeekSliderPosition()}
             onSlidingStart={this._onSeekSliderValueChange}
@@ -718,7 +751,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
             </TouchableHighlight>
             <Slider
               style={styles.volumeSlider}
-              {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})} 
+              {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
               thumbImage={ICON_THUMB_2.module}
               value={1}
               onValueChange={this._onVolumeSliderValueChange}
@@ -730,7 +763,11 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
             onPress={this._onLoopPressed}>
             <Image
               style={styles.button}
-              source={LOOPING_TYPE_ICONS[this.state.loopingType as keyof typeof LOOPING_TYPE_ICONS].module}
+              source={
+                LOOPING_TYPE_ICONS[
+                  this.state.loopingType as keyof typeof LOOPING_TYPE_ICONS
+                ].module
+              }
             />
           </TouchableHighlight>
         </View>
@@ -751,7 +788,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
           </TouchableHighlight>
           <Slider
             style={styles.rateSlider}
-            {...(Platform.OS  === 'ios' && {trackImage: ICON_TRACK_1.module})} 
+            {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
             thumbImage={ICON_THUMB_1.module}
             value={this.state.rate / RATE_SCALE}
             onSlidingComplete={this._onRateSliderSlidingComplete}
@@ -838,6 +875,23 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   }
 }
 
+const mapStateToProps = state => ({
+  needLoad: state.reducer.needLoad,
+  selector: state.reducer.selector,
+  nextSelector: state.reducer.nextSelector,
+  limitSplit: state.reducer.limitSplit,
+  nextURL: state.reducer.nextURL,
+  arrString: state.reducer.arrString,
+});
+
+const ActionCreators = Object.assign({}, {loadNew, loadNewData});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppPlay);
+
 const styles = StyleSheet.create({
   emptyContainer: {
     alignSelf: 'stretch',
@@ -890,7 +944,7 @@ const styles = StyleSheet.create({
     lineHeight: FONT_SIZE,
     overflow: 'hidden',
     // whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
   },
   buffering: {
     textAlign: 'left',
