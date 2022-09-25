@@ -272,11 +272,18 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
     if (this.playbackInstance) {
       if (success) {
         console.log('successfully finished playing');
-        this.setState({playState: 'paused'});
-        this.playbackInstance.setCurrentTime(0);
-        if (this.state.loopingType != 1) {
+        // neu lap 1 bai thi ko lam gi
+        if (this.state.loopingType == LOOPING_TYPE_ALL) {
+          this.setState({playState: 'paused'});
+          this.playbackInstance.setCurrentTime(0);
           this._advanceIndex(true);
-          this._updatePlaybackInstanceForIndex(true);
+          // lap lai tat ca den cuoi bai se quay ve dau va ko play tiep
+          if (this.index == 0) {
+            this.setState({isPlaying: false});
+            this._updatePlaybackInstanceForIndex(false);
+          } else {
+            this._updatePlaybackInstanceForIndex(true);
+          }
         }
       } else {
         console.log('playback failed due to audio decoding errors');
@@ -289,6 +296,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
     this.setState({
       playState: 'playing',
     });
+    this.playbackInstance?.setNumberOfLoops(this.state.loopingType == LOOPING_TYPE_ALL ? 0 : -1);
     this.playbackInstance?.setVolume(this.state.volume);
     this.playbackInstance?.setSpeed(this.state.rate);
     this.playbackInstance?.play(this.playComplete);
@@ -378,7 +386,7 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   _advanceIndex(forward: boolean) {
     this.index =
       (this.index + (forward ? 1 : this.state.playList.length - 1)) % this.state.playList.length;
-      this.setState({index: this.index});
+    this.setState({index: this.index});
   }
 
   async _updatePlaybackInstanceForIndex(playing: boolean) {
@@ -444,11 +452,14 @@ export default class AppPlay extends React.Component<MyProps, MyState> {
   };
 
   _onLoopPressed = () => {
+    // doi kieu lap
+    const loopingType = this.state.loopingType == LOOPING_TYPE_ONE ? LOOPING_TYPE_ALL : LOOPING_TYPE_ONE;
     if (this.playbackInstance != null) {
       this.playbackInstance.setNumberOfLoops(
-        this.state.loopingType !== LOOPING_TYPE_ONE ? 1 : -1,
+        loopingType == LOOPING_TYPE_ALL ? 0 : -1,
       );
     }
+    this.setState({loopingType: loopingType})
   };
 
   _onVolumeSliderValueChange = (value: any) => {
