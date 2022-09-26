@@ -3,17 +3,14 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   ListRenderItemInfo,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {PlaylistItem} from '../model/api';
 import ItemText from './ItemText';
 
-const  ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
+const ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
   const {idSelected, onChange} = props;
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState<PlaylistItem[]>([]);
@@ -30,6 +27,7 @@ const  ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
           title: any;
           name: any;
           isSelect: boolean;
+          uri: string;
           selectedClass: {
             paddingVertical: number;
             margin: number;
@@ -62,23 +60,6 @@ const  ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
 
   const renderItem = (data: ListRenderItemInfo<PlaylistItem>) => (
     <ItemText data={data} idSelected={idSelected} selectItem={selectItem} />
-    // <TouchableOpacity
-    //     style={[styles.list, data.item.id == idSelected ? styles.selected : styles.list]}
-    //     onPress={() => selectItem(data.item.id)}
-    // >
-    //     {/* <Image
-    //         source={{ uri: data.item.thumbnailUrl }}
-    //         style={{ width: 5, height: 20 }}
-    //     /> */}
-    //     <Text style={styles.lightText}>
-    //         {data.item.uri}
-    //     </Text>
-    //     <Text style={styles.lightText}>
-    //         {" "}
-    //         {data.item.title.charAt(0).toUpperCase() +
-    //             data.item.title.slice(1)}{" "}
-    //     </Text>
-    // </TouchableOpacity>
   );
 
   return loading ? (
@@ -102,14 +83,11 @@ const  ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
       />
     </View>
   );
-}
+};
 
-function arePropsEqual(prevProps, nextProps) {
-    console.log(prevProps.idSelected + ' ' + nextProps.idSelected)
-  return prevProps.idSelected === nextProps.idSelected; //It could be something else not has to be id.
-}
-export default ListItemPlay = memo(ListItem);
-const {width: DEVICE_WIDTH, height: DEVICE_HEIGHT} = Dimensions.get('window');
+export default memo(ListItem);
+
+const {width: DEVICE_WIDTH} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -134,14 +112,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     height: 50,
     margin: 3,
-    flexDirection: 'row',
+    flexDirection: 'column',
     backgroundColor: '#192338',
     justifyContent: 'flex-start',
     alignItems: 'center',
     zIndex: -1,
     overflow: 'hidden',
     display: 'flex',
-    flexDirection: 'column',
   },
 
   lightText: {

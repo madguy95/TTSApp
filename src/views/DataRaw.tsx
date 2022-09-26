@@ -1,23 +1,13 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  Button,
-  Flex,
-  FormControl,
-  Input,
-  Stack,
-  TextArea,
-  ScrollView,
-  HStack,
-} from 'native-base';
+import React from 'react';
+import {Button, Flex, Input, Stack, TextArea, ScrollView} from 'native-base';
 import {Platform} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {Text, View} from '../components/Themed';
 import {useRef} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {loadNew, loadNewData, updateWebInfo} from '../redux/Actions';
-import {connect, useSelector} from 'react-redux';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 function DataRaw(props) {
@@ -27,11 +17,6 @@ function DataRaw(props) {
   const gridIframe = useRef<HTMLIFrameElement>(null);
 
   const webViewRef = useRef<any>(null);
-
-  useEffect(() => {
-    loadHistory();
-    console.log('load 1 time')
-  }, []);
 
   function updateWeb(obj) {
     props.actions.updateWebInfo({
@@ -44,42 +29,10 @@ function DataRaw(props) {
     });
   }
 
-  async function loadHistory() {
-    try {
-      const uriC = await AsyncStorage.getItem('uriweb');
-      let obj = {}
-      if (uriC) {
-        obj.currentURL = uriC;
-      }
-      const selectorC = await AsyncStorage.getItem('selector');
-      if (selectorC) {
-        obj.selector = selectorC;
-      }
-      updateWeb({...obj});
-      console.log('loading' + uriC + ' ' + selectorC);
-    } catch (e) {
-      console.log('saving error: ' + e);
-    }
-  }
-
-  async function saveHistory() {
-    try {
-      if (currentURL) {
-        await AsyncStorage.setItem('uriweb', currentURL);
-      }
-      if (selector) {
-        await AsyncStorage.setItem('selector', selector);
-      }
-      console.log('Saving' + currentURL + ' ' + selector);
-    } catch (e) {
-      console.log('saving error: ' + e);
-    }
-  }
-
   const onClickLoad = () => {
-    props.actions.loadNewData(currentURL, selector, nextSelector, limitSplit);
-    saveHistory();
+    props.actions.loadNewData(inputURL, selector, nextSelector, limitSplit);
   };
+
   const goback = () => {
     webViewRef.current.goBack();
   };
@@ -122,7 +75,7 @@ function DataRaw(props) {
               <Input
                 type="text"
                 value={nextSelector}
-                onChangeText={nextSelector => updateWeb({nextSelector: value})}
+                onChangeText={value => updateWeb({nextSelector: value})}
                 placeholder="css selector get href next link"
               />
               <Text>Max length</Text>
@@ -150,7 +103,8 @@ function DataRaw(props) {
                 </Ionicons>
               </Button>
               <TextArea
-                readonly
+                isDisabled={true}
+                isReadOnly={true}
                 h={20}
                 placeholder="Text Area Placeholder"
                 w={{
@@ -174,7 +128,8 @@ function DataRaw(props) {
               placeholder="Current url load web"
             />
             <Input
-              readonly
+              isDisabled={true}
+              isReadOnly={true}
               type="text"
               value={nextURL}
               placeholder="Next url: can be empty"
@@ -220,25 +175,27 @@ function DataRaw(props) {
                 />
               </Flex>
             </View>
-            <WebView
-              ref={webViewRef}
-              source={{uri: currentURL}}
-              style={{
-                marginTop: 22,
-                flex: 1,
-                margin: 'auto',
-                // width: 200,
-                // height: 200,
-              }}
-              allowsFullscreenVideo={false}
-              onNavigationStateChange={({url, canGoBack}) => {
-                setInputURl(url)
-              }}
-              // scrollEnabled={false}
-              useWebKit={true}
-              originWhitelist={['*']}
-              allowsInlineMediaPlayback={true}
-            />
+            {currentURL ? (
+              <WebView
+                ref={webViewRef}
+                source={{uri: currentURL}}
+                style={{
+                  marginTop: 22,
+                  flex: 1,
+                  margin: 'auto',
+                  // width: 200,
+                  // height: 200,
+                }}
+                allowsFullscreenVideo={false}
+                onNavigationStateChange={({url, canGoBack}) => {
+                  setInputURl(url);
+                }}
+                // scrollEnabled={false}
+                useWebKit={true}
+                originWhitelist={['*']}
+                allowsInlineMediaPlayback={true}
+              />
+            ) : null}
           </View>
         )}
       </ScrollView>

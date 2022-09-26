@@ -9,9 +9,10 @@ const initState = {
   content: '',
   limitSplit: 500,
   arrString: [],
+  loadedConfig: false,
 };
 
-const reducer = (state = initState, action) => {
+const reducer = (state = initState, action: { type: any; payload: any; }) => {
   switch (action.type) {
     case NOTI_LOAD_NEW:
       return {

@@ -24,8 +24,7 @@ function ReferenceDataContextProvider(props: { children: boolean | React.ReactCh
         setData(jsonObj[id]);
       }
     } catch (e) {
-      // saving error
-      console.log('saving error')
+      console.log('[ReferenceDataContext] loadData: ' + e);
     }
   };
 

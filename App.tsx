@@ -21,6 +21,7 @@ import {
   DefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
+import CacheHandler from './src/components/CacheHandler';
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -53,6 +54,7 @@ export default function App() {
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ReferenceDataContextProvider>
         <NativeBaseProvider>
+          <CacheHandler />
           <Navigation colorScheme={colorScheme} />
         </NativeBaseProvider>
       </ReferenceDataContextProvider>

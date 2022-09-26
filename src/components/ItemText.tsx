@@ -3,21 +3,27 @@ import React, {memo} from 'react';
 import {Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
 import {PlaylistItem} from '../model/api';
 
-class Item extends React.Component {
+type MyProps = {
+  data: ListRenderItemInfo<PlaylistItem>;
+  idSelected: number;
+  selectItem: Function;
+};
+class Item extends React.Component<MyProps> {
   shouldComponentUpdate?(
-    nextProps: Readonly<P>,
-    nextState: Readonly<S>,
+    nextProps: MyProps,
+    nextState: Readonly<any>,
     nextContext: any,
   ) {
     if (
       this.props.data.item.id === this.props.idSelected ||
       this.props.data.item.id === nextProps.idSelected
     ) {
-    //   console.log('shold change');
+      //   console.log('shold change');
     }
     return (
       this.props.data.item.id === this.props.idSelected ||
-      this.props.data.item.id === nextProps.idSelected
+      this.props.data.item.id === nextProps.idSelected ||
+      this.props.data.item.title !== nextProps.data.item.title
     );
   }
   render() {
@@ -49,14 +55,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     height: 50,
     margin: 3,
-    flexDirection: 'row',
+    flexDirection: 'column',
     backgroundColor: '#192338',
     justifyContent: 'flex-start',
     alignItems: 'center',
     zIndex: -1,
     overflow: 'hidden',
     display: 'flex',
-    flexDirection: 'column',
   },
 
   lightText: {

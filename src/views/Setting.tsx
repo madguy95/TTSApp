@@ -50,8 +50,7 @@ function ApiRaw() {
       await AsyncStorage.setItem('configs', JSON.stringify(configClone));
       await AsyncStorage.setItem('active', i.toString());
     } catch (e) {
-      // saving error
-      console.log('saving error');
+      console.log('[Setting] storeData: ' + e);
     }
   };
 
@@ -70,8 +69,7 @@ function ApiRaw() {
         }
       }
     } catch (e) {
-      // saving error
-      console.log('saving error');
+      console.log('[Setting] loadData: ' + e);
     }
   };
 

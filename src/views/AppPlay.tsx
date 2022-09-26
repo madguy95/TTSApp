@@ -1,7 +1,6 @@
 /**
  * @flow
  */
-
 import React from 'react';
 import {
   Alert,
@@ -13,14 +12,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-//  import { Asset } from "expo-asset";
 import Sound from 'react-native-sound';
-//  import {
-//    InterruptionModeAndroid,
-//    InterruptionModeIOS,
-//    ResizeMode,
-//  } from "expo-av";
-//  import * as Font from "expo-font";
 import Slider from '@react-native-community/slider';
 import ListItemPlay from '../components/ListItemPlay';
 import {DataBatch} from '../components/DataBatch';
@@ -30,20 +22,22 @@ import {loadNew, loadNewData} from '../redux/Actions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-//  import { MaterialIcons } from "@expo/vector-icons";
-Sound.setCategory('Playback');
+import {
+  ICON_BACK_BUTTON,
+  ICON_FORWARD_BUTTON,
+  ICON_LOOP_ALL_BUTTON,
+  ICON_LOOP_ONE_BUTTON,
+  ICON_MUTED_BUTTON,
+  ICON_PAUSE_BUTTON,
+  ICON_PLAY_BUTTON,
+  ICON_STOP_BUTTON,
+  ICON_THUMB_1,
+  ICON_THUMB_2,
+  ICON_TRACK_1,
+  ICON_UNMUTED_BUTTON,
+} from '../constants/Icon';
 
-class Icon {
-  module: any;
-  width: number;
-  height: number;
-  constructor(module: any, width: number, height: number) {
-    this.module = module;
-    this.width = width;
-    this.height = height;
-    //  Asset.fromModule(this.module).downloadAsync();
-  }
-}
+Sound.setCategory('Playback');
 
 const PlAYLIST = [
   new PlaylistItem(
@@ -66,73 +60,6 @@ const PlAYLIST = [
   ),
 ];
 
-const ICON_THROUGH_EARPIECE = 'speaker-phone';
-const ICON_THROUGH_SPEAKER = 'speaker';
-
-const ICON_PLAY_BUTTON = new Icon(
-  require('../../assets/images/play_button.png'),
-  34,
-  51,
-);
-const ICON_PAUSE_BUTTON = new Icon(
-  require('../../assets/images/pause_button.png'),
-  34,
-  51,
-);
-const ICON_STOP_BUTTON = new Icon(
-  require('../../assets/images/stop_button.png'),
-  22,
-  22,
-);
-const ICON_FORWARD_BUTTON = new Icon(
-  require('../../assets/images/forward_button.png'),
-  33,
-  25,
-);
-const ICON_BACK_BUTTON = new Icon(
-  require('../../assets/images/back_button.png'),
-  33,
-  25,
-);
-
-const ICON_LOOP_ALL_BUTTON = new Icon(
-  require('../../assets/images/loop_all_button.png'),
-  77,
-  35,
-);
-const ICON_LOOP_ONE_BUTTON = new Icon(
-  require('../../assets/images/loop_one_button.png'),
-  77,
-  35,
-);
-
-const ICON_MUTED_BUTTON = new Icon(
-  require('../../assets/images/muted_button.png'),
-  67,
-  58,
-);
-const ICON_UNMUTED_BUTTON = new Icon(
-  require('../../assets/images/unmuted_button.png'),
-  67,
-  58,
-);
-
-const ICON_TRACK_1 = new Icon(
-  require('../../assets/images/track_1.png'),
-  166,
-  5,
-);
-const ICON_THUMB_1 = new Icon(
-  require('../../assets/images/thumb_1.png'),
-  18,
-  19,
-);
-const ICON_THUMB_2 = new Icon(
-  require('../../assets/images/thumb_2.png'),
-  15,
-  19,
-);
-
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
 const LOOPING_TYPE_ICONS = {0: ICON_LOOP_ALL_BUTTON, 1: ICON_LOOP_ONE_BUTTON};
@@ -145,8 +72,16 @@ const LOADING_STRING = '... loading ...';
 const BUFFERING_STRING = '...buffering...';
 const RATE_SCALE = 3.0;
 const VIDEO_CONTAINER_HEIGHT = (DEVICE_HEIGHT * 2.0) / 5.0 - FONT_SIZE * 2;
-type MyProps = {};
+type MyProps = {
+  arrString: [];
+  nextURL: string;
+  selector: string;
+  nextSelector: string;
+  limitSplit: number;
+  actions: any;
+};
 type MyState = {
+  index: number;
   isSeeking: boolean;
   showVideo: boolean;
   playbackInstanceName: string;
@@ -172,16 +107,15 @@ type MyState = {
   content: [];
   playState: string;
 };
-class AppPlay extends React.Component {
+class AppPlay extends React.Component<MyProps | never, MyState> {
   static contextType = ReferenceDataContext;
   index: number;
   shouldPlayAtEndOfSeek: boolean;
   playbackInstance: Sound | null;
   timeout!: NodeJS.Timer;
   playList: PlaylistItem[];
-  constructor(props: {} | Readonly<{}>) {
+  constructor(props: MyProps) {
     super(props);
-    this.actions = this.props.actions;
     this.index = 0;
     this.shouldPlayAtEndOfSeek = false;
     this.playbackInstance = null;
@@ -265,7 +199,6 @@ class AppPlay extends React.Component {
       });
       // reset lai trang thai player khi load text moi
       this._onStopPressed();
-      console.log('isplay', this.state.isPlaying)
       this._loadNewPlaybackInstance(this.state.isPlaying);
       // }
     }
@@ -644,11 +577,13 @@ class AppPlay extends React.Component {
             <ListItemPlay
               data={this.playList}
               onChange={this._onChangeSelect}
-              idSelected={this.state.index}></ListItemPlay>
+              idSelected={this.state.index}
+            />
             <DataBatch
               idSelected={this.state.index}
               playList={this.state.playList}
-              setPlayList={this.setPlayList.bind(this)}></DataBatch>
+              setPlayList={this.setPlayList.bind(this)}
+            />
           </View>
         </View>
         <View
@@ -815,7 +750,7 @@ class AppPlay extends React.Component {
                }
                size={32}
                color="black"
-             /> 
+             />
            </TouchableHighlight>*/}
         </View>
         <View />
