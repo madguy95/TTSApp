@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {ReferenceDataContext} from '../storage/ReferenceDataContext';
-import {Api, ApiDefault, PlaylistItem} from '../model/api';
+import {Api, PlaylistItem} from '../model/api';
 import {delay} from '../utils';
-import {callApiGetMp3} from '../helper/APIService';
+import {callApiGetMp3, downloadFile} from '../helper/APIService';
+import { ApiDefault } from './setting-profile/config';
 
 const MAX_LOAD_FILE_IN_TIME = 3;
 const API_DELAY_TIME = 2000; // ms
@@ -13,13 +14,8 @@ export function DataBatch(props: {
   setPlayList: any;
 }) {
   const {data} = useContext(ReferenceDataContext);
-  const [apiInfo, setApiInfo] = useState<Api>(ApiDefault);
   const [playList, setPlay] = useState(props.playList);
   const [isLoading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setApiInfo(data);
-  }, [data]);
 
   useEffect(() => {
     setPlay(props.playList);
@@ -29,7 +25,7 @@ export function DataBatch(props: {
     if (!Number.isNaN(props.idSelected) && !isLoading) {
       loadMp3();
     }
-  }, [props.idSelected, playList, apiInfo, isLoading]);
+  }, [props.idSelected, playList, data, isLoading]);
 
   async function loadMp3() {
     let needLoadMore = false;
@@ -44,20 +40,25 @@ export function DataBatch(props: {
       if (needLoadMore && indexCurrent < MAX_LOAD_FILE_IN_TIME - 1) {
         indexCurrent++;
         if (item.uri == null || item.uri == undefined || item.uri == '') {
-          arrPromise.push(getMp3File(item.name, null, indexCurrent * 1000));
+          arrPromise.push(getMp3File(item.name, index, indexCurrent * 1000));
           arrIndex.push(index);
         }
       }
     });
     if (arrPromise.length > 0) {
       setLoading(true);
+      console.log('go')
       Promise.all(arrPromise).then(values => {
         let isChange = false;
         values.forEach((id, index) => {
           if (id) {
-            playList[arrIndex[index]].uri = apiInfo.urlAudio + '/' + id;
+            if (data.code === ApiDefault.code) {
+              playList[arrIndex[index]].uri = data.urlAudio + '/' + id;
+            } else {
+              playList[arrIndex[index]].uri = id;
+            }
             isChange = true;
-          } 
+          }
         });
         if (isChange) {
           setPlay(playList);
@@ -74,9 +75,14 @@ export function DataBatch(props: {
     timeNeedWait: any,
   ): Promise<any> => {
     return new Promise(resolveInner => {
-      delay(timeNeedWait).then(() =>
-        resolveInner(callApiGetMp3(text, signal, apiInfo)),
-      );
+      delay(timeNeedWait).then(() => {
+        if (data.code === ApiDefault.code) {
+          resolveInner(callApiGetMp3(text, signal, data));
+        } else {
+          console.log('go')
+          resolveInner(downloadFile(text,signal, data));
+        }
+      });
     });
   };
 

@@ -1,5 +1,14 @@
-import React from 'react';
-import {Button, Flex, Input, Stack, TextArea, ScrollView} from 'native-base';
+import React, {useEffect} from 'react';
+import {
+  Button,
+  Flex,
+  Input,
+  Stack,
+  TextArea,
+  ScrollView,
+  HStack,
+  Box,
+} from 'native-base';
 import {Platform} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
@@ -15,8 +24,13 @@ function DataRaw(props) {
   const {selector, nextSelector, limitSplit, nextURL, currentURL} = props;
   const [inputURL, setInputURl] = React.useState(currentURL);
   const gridIframe = useRef<HTMLIFrameElement>(null);
+  const [loading, setLoading] = React.useState(false);
 
   const webViewRef = useRef<any>(null);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [content]);
 
   function updateWeb(obj) {
     props.actions.updateWebInfo({
@@ -30,6 +44,7 @@ function DataRaw(props) {
   }
 
   const onClickLoad = () => {
+    setLoading(true);
     props.actions.loadNewData(inputURL, selector, nextSelector, limitSplit);
   };
 
@@ -65,19 +80,27 @@ function DataRaw(props) {
               _text={{
                 color: 'coolGray.800',
               }}>
-              <Text>Query selector {props.needLoad ? 'true' : 'false'}</Text>
-              <Input
-                type="text"
-                value={selector}
-                onChangeText={value => updateWeb({selector: value})}
-                placeholder="css selector get content"
-              />
-              <Input
-                type="text"
-                value={nextSelector}
-                onChangeText={value => updateWeb({nextSelector: value})}
-                placeholder="css selector get href next link"
-              />
+              <Text>Query selector</Text>
+              <Stack>
+                <HStack>
+                  <Input
+                    flex={1}
+                    type="text"
+                    value={selector}
+                    onChangeText={value => updateWeb({selector: value})}
+                    placeholder="css selector get content"
+                  />
+                  <Input
+                    ml={1}
+                    flex={1}
+                    type="text"
+                    value={nextSelector}
+                    onChangeText={value => updateWeb({nextSelector: value})}
+                    placeholder="css selector get href next link"
+                  />
+                </HStack>
+              </Stack>
+
               <Text>Max length</Text>
               <Input
                 keyboardType="numeric"
@@ -97,13 +120,18 @@ function DataRaw(props) {
               _text={{
                 color: 'coolGray.800',
               }}>
-              <Button onPress={() => onClickLoad()}>
-                <Ionicons name={'reload-circle'} size={15}>
-                  Load
-                </Ionicons>
+              <Button
+                isLoading={loading}
+                isLoadingText="Loading"
+                colorScheme={'muted'}
+                onPress={() => onClickLoad()}
+                leftIcon={
+                  <Ionicons name={'reload-circle'} size={15} color={'white'} />
+                }>
+                Load
               </Button>
               <TextArea
-                isDisabled={true}
+                // isDisabled={true}
                 isReadOnly={true}
                 h={20}
                 placeholder="Text Area Placeholder"
@@ -128,6 +156,7 @@ function DataRaw(props) {
               placeholder="Current url load web"
             />
             <Input
+              mt={1}
               isDisabled={true}
               isReadOnly={true}
               type="text"
@@ -175,27 +204,33 @@ function DataRaw(props) {
                 />
               </Flex>
             </View>
-            {currentURL ? (
-              <WebView
-                ref={webViewRef}
-                source={{uri: currentURL}}
-                style={{
-                  marginTop: 22,
-                  flex: 1,
-                  margin: 'auto',
-                  // width: 200,
-                  // height: 200,
-                }}
-                allowsFullscreenVideo={false}
-                onNavigationStateChange={({url, canGoBack}) => {
-                  setInputURl(url);
-                }}
-                // scrollEnabled={false}
-                useWebKit={true}
-                originWhitelist={['*']}
-                allowsInlineMediaPlayback={true}
-              />
-            ) : null}
+            <ScrollView style={styles.scroll} >
+            <View style={styles.webview}>
+              {currentURL ? (
+                <WebView
+                  ref={webViewRef}
+                  source={{uri: currentURL}}
+                  style={{
+                    marginTop: 22,
+                    flex: 1,
+                    margin: 'auto',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  allowsFullscreenVideo={false}
+                  onNavigationStateChange={({url, canGoBack}) => {
+                    setInputURl(url);
+                  }}
+                  scrollEnabled={true}
+                  nestedScrollEnabled
+                  useWebKit={true}
+                  originWhitelist={['*']}
+                  allowsInlineMediaPlayback={true}
+                />
+              ) : null}
+              
+            </View>
+            </ScrollView>
           </View>
         )}
       </ScrollView>
@@ -240,8 +275,13 @@ const styles = StyleSheet.create({
   webview: {
     display: 'flex',
     width: '100%',
-    height: 800,
+    height: 600,
     backgroundColor: '#FFF8ED',
+  },
+  scroll: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden'
   },
   view: {
     display: 'flex',

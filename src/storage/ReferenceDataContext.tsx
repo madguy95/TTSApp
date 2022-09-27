@@ -1,27 +1,37 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useEffect, useState } from "react";
-import { Api, ApiDefault } from "../model/api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {createContext, useEffect} from 'react';
+import {ApiDefault} from '../components/setting-profile/config';
+import {Api} from '../model/api';
 
 const ReferenceDataContext = createContext({
-    data: ApiDefault, 
-    setData: (data: Api) => {}
+  data: ApiDefault,
+  setData: (data: Api) => {},
 });
 
-function ReferenceDataContextProvider(props: { children: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined; }) {
+function ReferenceDataContextProvider(props: {
+  children:
+    | boolean
+    | React.ReactChild
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+}) {
   const [data, setData] = React.useState<Api>(ApiDefault);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
-      const idStr = await AsyncStorage.getItem("active");
-      if (idStr != undefined && !isNaN(+idStr)) {
-        let id = Number(idStr);
-        const jsonValue = await AsyncStorage.getItem("configs");
-        let jsonObj = jsonValue != null ? JSON.parse(jsonValue) : {};
-        setData(jsonObj[id]);
+      const code = await AsyncStorage.getItem('active_code');
+      if (code) {
+        const jsonValue = await AsyncStorage.getItem(code);
+        let jsonObj = jsonValue != null ? JSON.parse(jsonValue) : null;
+        if (jsonObj) {
+          setData(jsonObj);
+        }
       }
     } catch (e) {
       console.log('[ReferenceDataContext] loadData: ' + e);
@@ -29,10 +39,10 @@ function ReferenceDataContextProvider(props: { children: boolean | React.ReactCh
   };
 
   return (
-    <ReferenceDataContext.Provider value={{ data, setData }}>
+    <ReferenceDataContext.Provider value={{data, setData}}>
       {props.children}
     </ReferenceDataContext.Provider>
   );
 }
 
-export { ReferenceDataContext, ReferenceDataContextProvider };
+export {ReferenceDataContext, ReferenceDataContextProvider};

@@ -3,12 +3,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {loadNew, loadNewData, updateWebInfo} from '../redux/Actions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import { cleanTmpFileCache } from '../helper/APIService';
 
 function Cacher(props) {
   const {selector, nextSelector, limitSplit, currentURL, loadedConfig} = props;
 
   useEffect(() => {
     loadHistory();
+    cleanTmpFileCache();
     return () => {
       saveHistory();
     };
