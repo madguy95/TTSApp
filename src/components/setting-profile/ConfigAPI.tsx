@@ -15,6 +15,11 @@ import {
   VStack,
   HStack,
   Heading,
+  Fab,
+  IconButton,
+  Stagger,
+  useDisclose,
+  Center,
 } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ReferenceDataContext} from '../../storage/ReferenceDataContext';
@@ -59,7 +64,7 @@ function ConfigAPI(props) {
     setData({...props.config, ...api});
     await AsyncStorage.setItem('active_code', props.name);
   };
-
+  const {isOpen, onToggle} = useDisclose();
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll} nestedScrollEnabled={true}>
@@ -131,23 +136,87 @@ function ConfigAPI(props) {
           ) : null}
           {props.config.code == ApiViettelDefault.code ? (
             <FormControl>
-            <Stack mx={4}>
-              <FormControl.Label>Header</FormControl.Label>
-              <TextArea
-                h={20}
-                placeholder="Header data"
-                w={{
-                  base: '100%',
-                }}
-                value={api.header}
-                onChangeText={value => setApi({...api, header: value})}
-                autoCompleteType={undefined}
-              />
-            </Stack>
-          </FormControl>
+              <Stack mx={4}>
+                <FormControl.Label>Header</FormControl.Label>
+                <TextArea
+                  h={20}
+                  placeholder="Header data"
+                  w={{
+                    base: '100%',
+                  }}
+                  value={api.header}
+                  onChangeText={value => setApi({...api, header: value})}
+                  autoCompleteType={undefined}
+                />
+              </Stack>
+            </FormControl>
           ) : null}
           <FormControl>
             <Stack mx={4}>
+                  <Stagger
+                    visible={isOpen}
+                    initial={{
+                      opacity: 0,
+                      scale: 0,
+                      translateY: 34,
+                    }}
+                    animate={{
+                      translateY: 0,
+                      scale: 1,
+                      opacity: 1,
+                      transition: {
+                        type: 'spring',
+                        mass: 0.8,
+                        stagger: {
+                          offset: 30,
+                          reverse: true,
+                        },
+                      },
+                    }}
+                    exit={{
+                      translateY: 34,
+                      scale: 0.5,
+                      opacity: 0,
+                      transition: {
+                        duration: 100,
+                        stagger: {
+                          offset: 30,
+                          reverse: true,
+                        },
+                      },
+                    }}>
+                    <IconButton
+                      // mb="4"
+                      variant="solid"
+                      bg="indigo.500"
+                      colorScheme="indigo"
+                      borderRadius="full"
+                      icon={
+                        <Ionicons name={'save'} size={10} color={'white'} />
+                      }
+                    />
+                  </Stagger>
+                {/* <VStack alignItems="center">
+                  <IconButton
+                    variant="solid"
+                    borderRadius="full"
+                    size="lg"
+                    onPress={onToggle}
+                    bg="cyan.400"
+                    icon={<Ionicons name={'save'} size={10} color={'white'} />}
+                  />
+                </VStack> */}
+              <Fab
+                renderInPortal={false}
+                shadow={2}
+                right={0}
+                top={0}
+                onPress={onToggle}
+                placement="top-right"
+                size="xs"
+                icon={<Ionicons name={'save'} size={10} color={'white'} />}
+                label="set default"
+              />
               <FormControl.Label>Query String</FormControl.Label>
               <TextArea
                 h={20}
