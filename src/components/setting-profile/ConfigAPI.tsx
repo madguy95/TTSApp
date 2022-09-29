@@ -29,6 +29,47 @@ import {connect} from 'react-redux';
 import {ApiDefault, ApiViettelDefault} from './config';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+function StaggerCop(props) {
+  const {isOpen, onToggle} = useDisclose();
+  return (
+    <>
+      <Box {...props}>
+        <HStack justifyContent="center">
+          <IconButton
+            variant="solid"
+            borderRadius="full"
+            mt={1}
+            size="xs"
+            onPress={onToggle}
+            colorScheme="gray"
+            icon={
+              <Ionicons
+                name={props.icon || 'information-circle-sharp'}
+                size={10}
+                color={'white'}
+              />
+            }
+          />
+        </HStack>
+      </Box>
+      <Box alignItems="center">
+        <Stagger visible={isOpen} {...propsStagger}>
+          <IconButton
+            mt={1}
+            variant="solid"
+            colorScheme="muted"
+            borderRadius="full"
+            size={'xs'}
+            onPress={props.onPress}
+            icon={
+              <Ionicons name={'arrow-down-outline'} size={10} color={'white'} />
+            }
+          />
+        </Stagger>
+      </Box>
+    </>
+  );
+}
 function ConfigAPI(props) {
   const {setData} = useContext(ReferenceDataContext);
   const [api, setApi] = React.useState<Api>({});
@@ -64,14 +105,23 @@ function ConfigAPI(props) {
     setData({...props.config, ...api});
     await AsyncStorage.setItem('active_code', props.name);
   };
-  const {isOpen, onToggle} = useDisclose();
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll} nestedScrollEnabled={true}>
         <Box>
           <FormControl isRequired>
             <Stack mx={4}>
-              <Heading size="xs">Name: {props.name}</Heading>
+              <Flex direction="row">
+                <Heading size="xs">Name: {props.name}</Heading>
+                <StaggerCop
+                  ml={1}
+                  mb={1}
+                  icon='clipboard-outline'
+                  onPress={() =>
+                    setApi({...api, ...props.config})
+                  }></StaggerCop>
+              </Flex>
             </Stack>
           </FormControl>
           <FormControl isRequired>
@@ -137,7 +187,14 @@ function ConfigAPI(props) {
           {props.config.code == ApiViettelDefault.code ? (
             <FormControl>
               <Stack mx={4}>
-                <FormControl.Label>Header</FormControl.Label>
+                <Flex direction="row">
+                  <FormControl.Label>Header</FormControl.Label>
+                  <StaggerCop
+                    ml={1}
+                    onPress={() =>
+                      setApi({...api, header: props.config.header})
+                    }></StaggerCop>
+                </Flex>
                 <TextArea
                   h={20}
                   placeholder="Header data"
@@ -153,71 +210,14 @@ function ConfigAPI(props) {
           ) : null}
           <FormControl>
             <Stack mx={4}>
-                  <Stagger
-                    visible={isOpen}
-                    initial={{
-                      opacity: 0,
-                      scale: 0,
-                      translateY: 34,
-                    }}
-                    animate={{
-                      translateY: 0,
-                      scale: 1,
-                      opacity: 1,
-                      transition: {
-                        type: 'spring',
-                        mass: 0.8,
-                        stagger: {
-                          offset: 30,
-                          reverse: true,
-                        },
-                      },
-                    }}
-                    exit={{
-                      translateY: 34,
-                      scale: 0.5,
-                      opacity: 0,
-                      transition: {
-                        duration: 100,
-                        stagger: {
-                          offset: 30,
-                          reverse: true,
-                        },
-                      },
-                    }}>
-                    <IconButton
-                      // mb="4"
-                      variant="solid"
-                      bg="indigo.500"
-                      colorScheme="indigo"
-                      borderRadius="full"
-                      icon={
-                        <Ionicons name={'save'} size={10} color={'white'} />
-                      }
-                    />
-                  </Stagger>
-                {/* <VStack alignItems="center">
-                  <IconButton
-                    variant="solid"
-                    borderRadius="full"
-                    size="lg"
-                    onPress={onToggle}
-                    bg="cyan.400"
-                    icon={<Ionicons name={'save'} size={10} color={'white'} />}
-                  />
-                </VStack> */}
-              <Fab
-                renderInPortal={false}
-                shadow={2}
-                right={0}
-                top={0}
-                onPress={onToggle}
-                placement="top-right"
-                size="xs"
-                icon={<Ionicons name={'save'} size={10} color={'white'} />}
-                label="set default"
-              />
-              <FormControl.Label>Query String</FormControl.Label>
+              <Flex direction="row">
+                <FormControl.Label>Query String</FormControl.Label>
+                <StaggerCop
+                  ml={1}
+                  onPress={() =>
+                    setApi({...api, queryString: props.config.queryString})
+                  }></StaggerCop>
+              </Flex>
               <TextArea
                 h={20}
                 placeholder="URL variable"
@@ -232,7 +232,14 @@ function ConfigAPI(props) {
           </FormControl>
           <FormControl>
             <Stack mx={4}>
-              <FormControl.Label>Body</FormControl.Label>
+              <Flex direction="row">
+                <FormControl.Label>Body</FormControl.Label>
+                <StaggerCop
+                  ml={1}
+                  onPress={() =>
+                    setApi({...api, body: props.config.body})
+                  }></StaggerCop>
+              </Flex>
               <TextArea
                 h={40}
                 placeholder="Text Area Placeholder"
@@ -296,6 +303,39 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default ConfigAPI;
+
+const propsStagger = {
+  initial: {
+    opacity: 0,
+    scale: 0,
+    translateY: 34,
+  },
+  animate: {
+    translateY: 0,
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      mass: 0.8,
+      stagger: {
+        offset: 30,
+        reverse: true,
+      },
+    },
+  },
+  exit: {
+    translateY: 34,
+    scale: 0.5,
+    opacity: 0,
+    transition: {
+      duration: 100,
+      stagger: {
+        offset: 30,
+        reverse: true,
+      },
+    },
+  },
+};
 
 const styles = StyleSheet.create({
   container: {

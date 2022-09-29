@@ -4,16 +4,16 @@ import {Api, PlaylistItem} from '../model/api';
 import {delay} from '../utils';
 import {callApiGetMp3, downloadFile} from '../helper/APIService';
 import { ApiDefault } from './setting-profile/config';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { addLog } from '../redux/Actions';
 
 const MAX_LOAD_FILE_IN_TIME = 3;
 const API_DELAY_TIME = 2000; // ms
 
-export function DataBatch(props: {
-  idSelected: number;
-  playList: PlaylistItem[];
-  setPlayList: any;
-}) {
+function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any; actions?: any; }) {
   const {data} = useContext(ReferenceDataContext);
+  const {actions} = props
   const [playList, setPlay] = useState(props.playList);
   const [isLoading, setLoading] = useState(false);
 
@@ -47,17 +47,18 @@ export function DataBatch(props: {
     });
     if (arrPromise.length > 0) {
       setLoading(true);
-      console.log('go')
       Promise.all(arrPromise).then(values => {
         let isChange = false;
         values.forEach((id, index) => {
-          if (id) {
+          if (id?.success) {
             if (data.code === ApiDefault.code) {
-              playList[arrIndex[index]].uri = data.urlAudio + '/' + id;
+              playList[arrIndex[index]].uri = data.urlAudio + '/' + id.id;
             } else {
-              playList[arrIndex[index]].uri = id;
+              playList[arrIndex[index]].uri = id.id;
             }
             isChange = true;
+          } else {
+            actions?.addLog(id?.message);
           }
         });
         if (isChange) {
@@ -79,7 +80,6 @@ export function DataBatch(props: {
         if (data.code === ApiDefault.code) {
           resolveInner(callApiGetMp3(text, signal, data));
         } else {
-          console.log('go')
           resolveInner(downloadFile(text,signal, data));
         }
       });
@@ -88,3 +88,14 @@ export function DataBatch(props: {
 
   return <></>;
 }
+
+const mapStateToProps = (state) => ({
+  errors: state.logReducer.errors
+});
+const ActionCreators = Object.assign({}, {addLog});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DataBatch);

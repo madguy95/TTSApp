@@ -1,9 +1,13 @@
 import { loadHtml } from '../helper/APIService';
 import { getContentInHtml, getNextLinkInHtml, truncate } from '../utils';
-import { CHANGE_WEB_INFO, NOTI_LOAD_NEW } from './ActionType';
+import { ADD_LOG, CHANGE_WEB_INFO, NOTI_LOAD_NEW } from './ActionType';
 import { URL } from 'react-native-url-polyfill';
 
 const MAX_LENGTH_CHARACTER_TRUNC = 500;
+
+export function addLog(data) {
+	return { type: ADD_LOG, payload: data };
+}
 
 export function loadNew(info: {
 	currentURL: any;

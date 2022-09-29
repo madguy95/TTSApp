@@ -5,12 +5,14 @@
  */
 // import {FontAwesome} from '@expo/vector-icons';
 import * as React from 'react';
-import {Text, View, ColorSchemeName} from 'react-native';
+import {Text, View, ColorSchemeName, Alert} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AppPlay from '../views/AppPlay';
 import Setting from '../views/Setting';
 import DataRaw from '../views/DataRaw';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Button } from 'native-base';
+import ButtonHeader from '../components/header/ButtonHeader';
 
 function HomeScreen() {
   return <AppPlay></AppPlay>;
@@ -52,7 +54,11 @@ export default function Navigation({
 
   return (
     <Tab.Navigator screenOptions={screenOption}>
-      <Tab.Screen name="Play" component={HomeScreen} />
+      <Tab.Screen name="Play" component={HomeScreen} options={{
+        headerRight: () => {
+          return (<ButtonHeader />)
+        }
+      }}/>
       <Tab.Screen name="Data" component={DataScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

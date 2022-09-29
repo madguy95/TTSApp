@@ -15,7 +15,7 @@ import {
 import Sound from 'react-native-sound';
 import Slider from '@react-native-community/slider';
 import ListItemPlay from '../components/ListItemPlay';
-import {DataBatch} from '../components/DataBatch';
+import DataBatch from '../components/DataBatch';
 import {ReferenceDataContext} from '../storage/ReferenceDataContext';
 import {PlaylistItem} from '../model/api';
 import {loadNew, loadNewData} from '../redux/Actions';
