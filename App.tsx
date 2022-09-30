@@ -51,7 +51,7 @@ export default function App() {
 
   return (
     <NavigationContainer
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={isDarkMode ? DarkTheme : DefaultTheme}>
       <ReferenceDataContextProvider>
         <NativeBaseProvider>
           <CacheHandler />

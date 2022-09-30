@@ -72,7 +72,7 @@ export async function callApiGetMp3(
       'Content-Type': 'application/json',
     },
     body: bodyStr,
-    signal: signal,
+    // signal: signal,
   })
     .then(async response => {
       if(!response.ok) {

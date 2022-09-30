@@ -2,7 +2,7 @@ import {Box, Button, Popover} from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import { Text } from '../Themed';
+import {Text} from '../Themed';
 
 function ButtonHeader(props) {
   const {errors} = props;
@@ -20,14 +20,28 @@ function ButtonHeader(props) {
             </Button>
           );
         }}>
-        <Popover.Content accessibilityLabel="Delete Customerd" w="lg">
-          <Popover.Arrow />
+        <Popover.Content
+          accessibilityLabel="Delete Customerd"
+          w="sm"
+          backgroundColor={'black'}>
+          {/* <Popover.Arrow /> */}
           <Popover.CloseButton />
           {/* <Popover.Header>Logs</Popover.Header> */}
-          <Popover.Body>
-            {errors && errors.length > 0 ? errors.map((item, i) => {
-                return (<Text key={i}>$ {item && Object.keys(item).length !== 0 ? JSON.stringify(item) : item?.toString()}</Text>)
-            }) : 'Nothing...'}
+          <Popover.Body bgColor={'black'}>
+            {errors && errors.length > 0 ? (
+              errors.map((item, i) => {
+                return (
+                  <Text style={{color: 'cornsilk'}} key={i}>
+                    $ {item.date}{' '}
+                    {item && Object.keys(item.message).length !== 0
+                      ? JSON.stringify(item.message)
+                      : item?.message?.toString()}
+                  </Text>
+                );
+              })
+            ) : (
+              <Text style={{color: 'cornsilk'}}>'Nothing...'</Text>
+            )}
           </Popover.Body>
         </Popover.Content>
       </Popover>

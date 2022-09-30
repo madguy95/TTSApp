@@ -878,6 +878,7 @@ const styles = StyleSheet.create({
     minHeight: FONT_SIZE * 2,
     lineHeight: FONT_SIZE,
     overflow: 'hidden',
+    color: 'dimgrey',
     // whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
   },
