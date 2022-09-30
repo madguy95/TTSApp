@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -22,6 +22,7 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 import CacheHandler from './src/components/CacheHandler';
+import LottieSplashScreen from "react-native-lottie-splash-screen";
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -48,6 +49,10 @@ export default function App() {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  useEffect(() => {
+    LottieSplashScreen.hide(); // here
+  }, []);
 
   return (
     <NavigationContainer
