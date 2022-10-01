@@ -16,7 +16,7 @@
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.0",
     "cheerio": "^1.0.0-rc.12",
-    "lottie-ios": "3.2.3",
+    "lottie-ios": "3.4.0",
     "native-base": "^3.4.16",
     "react": "18.1.0",
     "react-native": "0.70.1",

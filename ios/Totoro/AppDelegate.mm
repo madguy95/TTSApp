@@ -60,12 +60,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  UIViewController *rootViewController = [UIViewController new];
-
-  rootViewController.view = rootView;
-
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
 
   Dynamic *t = [Dynamic new];
   UIView *animationUIView = (UIView *)[t createAnimationViewWithRootView:rootView lottieName:@"loading"]; // change lottieName to your lottie files name
