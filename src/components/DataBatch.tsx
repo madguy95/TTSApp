@@ -3,17 +3,22 @@ import {ReferenceDataContext} from '../storage/ReferenceDataContext';
 import {Api, PlaylistItem} from '../model/api';
 import {delay} from '../utils';
 import {callApiGetMp3, downloadFile} from '../helper/APIService';
-import { ApiDefault } from './setting-profile/config';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { addLog } from '../redux/Actions';
+import {ApiDefault} from './setting-profile/config';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {addLog} from '../redux/Actions';
 
 const MAX_LOAD_FILE_IN_TIME = 3;
 const API_DELAY_TIME = 2000; // ms
 
-function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any; actions?: any; }) {
+function DataBatch(props: {
+  playList?: any;
+  idSelected?: any;
+  setPlayList?: any;
+  actions?: any;
+}) {
   const {data} = useContext(ReferenceDataContext);
-  const {actions} = props
+  const {actions} = props;
   const [playList, setPlay] = useState(props.playList);
   const [isLoading, setLoading] = useState(false);
 
@@ -28,6 +33,7 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
   }, [props.idSelected, playList, data, isLoading]);
 
   async function loadMp3() {
+    setLoading(true);
     let needLoadMore = false;
     let indexCurrent = 0;
     let arrPromise = new Array();
@@ -37,7 +43,13 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
         needLoadMore = true;
       }
       // load truoc cac ban ghi tiep theo
-      if (needLoadMore && indexCurrent < MAX_LOAD_FILE_IN_TIME - 1) {
+      if (
+        needLoadMore &&
+        indexCurrent < MAX_LOAD_FILE_IN_TIME - 1 &&
+        // load TTS synchonozied , by reason rn-fetch-blob have issue with 
+        // downloading parallel mutil files
+        arrPromise.length < 1
+      ) {
         indexCurrent++;
         if (item.uri == null || item.uri == undefined || item.uri == '') {
           arrPromise.push(getMp3File(item.name, index, indexCurrent * 1000));
@@ -46,7 +58,6 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
       }
     });
     if (arrPromise.length > 0) {
-      setLoading(true);
       Promise.all(arrPromise).then(values => {
         let isChange = false;
         values.forEach((id, index) => {
@@ -67,6 +78,8 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
         }
         setLoading(false);
       });
+    } else {
+      setLoading(false);
     }
   }
 
@@ -80,7 +93,7 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
         if (data.code === ApiDefault.code) {
           resolveInner(callApiGetMp3(text, signal, data));
         } else {
-          resolveInner(downloadFile(text,signal, data));
+          resolveInner(downloadFile(text, signal, data));
         }
       });
     });
@@ -89,8 +102,8 @@ function DataBatch(props: { playList?: any; idSelected?: any; setPlayList?: any;
   return <></>;
 }
 
-const mapStateToProps = (state) => ({
-  errors: state.logReducer.errors
+const mapStateToProps = state => ({
+  errors: state.logReducer.errors,
 });
 const ActionCreators = Object.assign({}, {addLog});
 

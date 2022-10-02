@@ -113,7 +113,7 @@ export async function loadHtml(linkCurrent?: string): Promise<string> {
 
 export async function downloadFile(
   text: string,
-  signal: string,
+  id: string,
   apiInfo: {body: string; header: string; method: string; url: string},
 ) {
   // console.log(RNFetchBlob.fs.dirs.DocumentDir);
@@ -127,11 +127,16 @@ export async function downloadFile(
     'Content-Type': 'application/json',
     token: '',
   };
+  let ext = 'mp3';
+  const body = JSON.parse(apiInfo.body);
+  if (body?.tts_return_option == 2) {
+    ext = 'wav';
+  }
   const res = await RNFetchBlob.config({
-    path: RNFetchBlob.fs.dirs.DocumentDir + '/userdata/' + signal + '.wav',
+    path: RNFetchBlob.fs.dirs.DocumentDir + '/userdata/' + id + '.' + ext,
     session: 'tmp_file',
     fileCache: true,
-    appendExt: 'wav',
+    appendExt: ext,
   }).fetch(apiInfo.method, apiInfo.url, header, bodyStr);
   return {success: true, id: res.path()};
 }
