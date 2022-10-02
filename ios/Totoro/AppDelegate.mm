@@ -75,7 +75,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [t playWithAnimationView:animationView];
 
   // If you want the animation layout to be forced to remove when hide is called, use this code
-  [RNSplashScreen setAnimationFinished:true];
+//  [RNSplashScreen setAnimationFinished:true];
 
   /* here */
 
