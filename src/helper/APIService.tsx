@@ -1,6 +1,6 @@
 import {delay, objToQueryString} from '../utils';
 import {Api} from '../model/api';
-import RNFetchBlob from 'rn-fetch-blob';
+import ReactNativeBlobUtil from 'react-native-blob-util'
 const HTTP_STRING = {
   '200': 'OK',
   '201': 'Created',
@@ -132,8 +132,8 @@ export async function downloadFile(
   if (body?.tts_return_option == 2) {
     ext = 'wav';
   }
-  const res = await RNFetchBlob.config({
-    path: RNFetchBlob.fs.dirs.DocumentDir + '/userdata/' + id + '.' + ext,
+  const res = await ReactNativeBlobUtil.config({
+    path: ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata/' + id + '.' + ext,
     session: 'tmp_file',
     fileCache: true,
     appendExt: ext,
@@ -146,23 +146,23 @@ export async function cleanTmpFileCache() {
   // console.log(RNFetchBlob.session('tmp_file').list());
   let files: any[] = [];
   if (
-    await RNFetchBlob.fs.exists(RNFetchBlob.fs.dirs.DocumentDir + '/userdata')
+    await ReactNativeBlobUtil.fs.exists(ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata')
   ) {
-    RNFetchBlob.fs
-      .exists(RNFetchBlob.fs.dirs.DocumentDir + '/userdata')
+    ReactNativeBlobUtil.fs
+      .exists(ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata')
       // files will an array contains filenames
       .then((files: any) => {
         files = files;
       });
     files.forEach(item =>
-      RNFetchBlob.session('tmp_file').add(
-        RNFetchBlob.fs.dirs.DocumentDir + '/' + item,
+      ReactNativeBlobUtil.session('tmp_file').add(
+        ReactNativeBlobUtil.fs.dirs.CacheDir + '/' + item,
       ),
     );
     console.log(files);
   }
   // remove all files in a session
-  RNFetchBlob.session('tmp_file')
+  ReactNativeBlobUtil.session('tmp_file')
     .dispose()
     .then(() => {
       console.log('cleaned cache');
