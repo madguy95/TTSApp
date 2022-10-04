@@ -30,7 +30,7 @@ function DataRaw(props) {
 
   useEffect(() => {
     setLoading(false);
-  }, [content]);
+  }, [content, inputURL, selector, nextSelector, limitSplit]);
 
   function updateWeb(obj) {
     props.actions.updateWebInfo({
@@ -106,7 +106,9 @@ function DataRaw(props) {
                 keyboardType="numeric"
                 type="text"
                 value={limitSplit.toString()}
-                onChangeText={value => updateWeb({limitSplit: parseInt(value)})}
+                onChangeText={value =>
+                  updateWeb({limitSplit: !isNaN(value) ? parseInt(value) : 0})
+                }
                 placeholder="limit string length to split"
               />
             </Flex>

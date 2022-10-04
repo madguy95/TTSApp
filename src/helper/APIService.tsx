@@ -1,6 +1,7 @@
 import {delay, objToQueryString} from '../utils';
 import {Api} from '../model/api';
-import ReactNativeBlobUtil from 'react-native-blob-util'
+import ReactNativeBlobUtil from 'react-native-blob-util';
+import {Platform} from 'react-native';
 const HTTP_STRING = {
   '200': 'OK',
   '201': 'Created',
@@ -35,7 +36,7 @@ const HTTP_STRING = {
   '415': 'Unsupported Media Type',
   '416': 'Requested Range Not Satisfiable',
   '417': 'Expectation Failed',
-  '418': 'I\'m a teapot',
+  '418': "I'm a teapot",
   '429': 'Too Many Requests',
   '500': 'Internal Server Error',
   '501': 'Not Implemented',
@@ -75,15 +76,15 @@ export async function callApiGetMp3(
     // signal: signal,
   })
     .then(async response => {
-      if(!response.ok) {
-        const error =  {
+      if (!response.ok) {
+        const error = {
           status: response.status,
           statusText: response.statusText || HTTP_STRING[response.status],
-        }
+        };
         return {
           success: false,
           message: error,
-        }
+        };
       }
       const json = await response.json();
       if (json.id !== undefined) {
@@ -111,6 +112,11 @@ export async function loadHtml(linkCurrent?: string): Promise<string> {
   return text;
 }
 
+const FOLDER_FILE =
+  Platform.OS === 'ios'
+    ? ReactNativeBlobUtil.fs.dirs.DocumentDir
+    : ReactNativeBlobUtil.fs.dirs.DownloadDir;
+
 export async function downloadFile(
   text: string,
   id: string,
@@ -127,44 +133,37 @@ export async function downloadFile(
     'Content-Type': 'application/json',
     token: '',
   };
+  console.log(header);
   let ext = 'mp3';
   const body = JSON.parse(apiInfo.body);
   if (body?.tts_return_option == 2) {
     ext = 'wav';
   }
+  // removeFileIfExist(FOLDER_FILE + '/' + id + '.' + ext);
   const res = await ReactNativeBlobUtil.config({
-    path: ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata/' + id + '.' + ext,
-    session: 'tmp_file',
-    fileCache: true,
-    appendExt: ext,
+    path: FOLDER_FILE + '/' + id + '.' + ext,
   }).fetch(apiInfo.method, apiInfo.url, header, bodyStr);
   return {success: true, id: res.path()};
 }
 
+export async function removeFileIfExist(path) {
+  if (await ReactNativeBlobUtil.fs.exists(path)) {
+    await ReactNativeBlobUtil.fs.unlink(path);
+    console.log('deleted {}', path);
+  }
+}
+
 export async function cleanTmpFileCache() {
   // list paths of a session
-  // console.log(RNFetchBlob.session('tmp_file').list());
-  let files: any[] = [];
-  if (
-    await ReactNativeBlobUtil.fs.exists(ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata')
-  ) {
+  if (await ReactNativeBlobUtil.fs.exists(FOLDER_FILE)) {
     ReactNativeBlobUtil.fs
-      .exists(ReactNativeBlobUtil.fs.dirs.CacheDir + '/userdata')
+      .ls(FOLDER_FILE)
       // files will an array contains filenames
       .then((files: any) => {
-        files = files;
+        files.forEach(item =>
+          ReactNativeBlobUtil.fs.unlink(FOLDER_FILE + '/' + item),
+        );
       });
-    files.forEach(item =>
-      ReactNativeBlobUtil.session('tmp_file').add(
-        ReactNativeBlobUtil.fs.dirs.CacheDir + '/' + item,
-      ),
-    );
-    console.log(files);
+    // console.log(filesArr);
   }
-  // remove all files in a session
-  ReactNativeBlobUtil.session('tmp_file')
-    .dispose()
-    .then(() => {
-      console.log('cleaned cache');
-    });
 }
