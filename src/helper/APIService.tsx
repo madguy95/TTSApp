@@ -143,6 +143,10 @@ export async function downloadFile(
   const res = await ReactNativeBlobUtil.config({
     path: FOLDER_FILE + '/' + id + '.' + ext,
   }).fetch(apiInfo.method, apiInfo.url, header, bodyStr);
+  if (res.info().status !== 200) {
+    removeFileIfExist(res.path());
+    return {success: false, message: res.json()};
+  }
   return {success: true, id: res.path()};
 }
 

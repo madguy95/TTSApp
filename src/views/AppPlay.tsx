@@ -256,8 +256,9 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
       this.state.loopingType == LOOPING_TYPE_ALL ? 0 : -1,
     );
     this.playbackInstance?.setVolume(this.state.volume);
-    this.playbackInstance?.setSpeed(this.state.rate);
     this.playbackInstance?.play(this.playComplete);
+    // set spleed after play , because can get issue onEnd not called
+    this.playbackInstance?.setSpeed(this.state.rate);
   };
 
   async setPlayList(playListArr: any) {

@@ -207,6 +207,28 @@ function ConfigAPI(props) {
                 />
               </Stack>
             </FormControl>
+            <FormControl>
+            <Stack mx={4}>
+              <Flex direction="row">
+                <FormControl.Label>List Token</FormControl.Label>
+                {/* <StaggerCop
+                  ml={1}
+                  onPress={() =>
+                    setApi({...api, header: props.config.header})
+                  }></StaggerCop> */}
+              </Flex>
+              <TextArea
+                h={20}
+                placeholder="Store Tokens"
+                w={{
+                  base: '100%',
+                }}
+                value={api.tokens}
+                onChangeText={value => setApi({...api, tokens: value})}
+                autoCompleteType={undefined}
+              />
+            </Stack>
+          </FormControl>
           ) : null}
           <FormControl>
             <Stack mx={4}>
