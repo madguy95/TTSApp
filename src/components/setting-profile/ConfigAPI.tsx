@@ -117,7 +117,7 @@ function ConfigAPI(props) {
                 <StaggerCop
                   ml={1}
                   mb={1}
-                  icon='clipboard-outline'
+                  icon="clipboard-outline"
                   onPress={() =>
                     setApi({...api, ...props.config})
                   }></StaggerCop>
@@ -185,50 +185,52 @@ function ConfigAPI(props) {
             </FormControl>
           ) : null}
           {props.config.code == ApiViettelDefault.code ? (
-            <FormControl>
-              <Stack mx={4}>
-                <Flex direction="row">
-                  <FormControl.Label>Header</FormControl.Label>
-                  <StaggerCop
-                    ml={1}
-                    onPress={() =>
-                      setApi({...api, header: props.config.header})
-                    }></StaggerCop>
-                </Flex>
-                <TextArea
-                  h={20}
-                  placeholder="Header data"
-                  w={{
-                    base: '100%',
-                  }}
-                  value={api.header}
-                  onChangeText={value => setApi({...api, header: value})}
-                  autoCompleteType={undefined}
-                />
-              </Stack>
-            </FormControl>
-            <FormControl>
-            <Stack mx={4}>
-              <Flex direction="row">
-                <FormControl.Label>List Token</FormControl.Label>
-                {/* <StaggerCop
+            <>
+              <FormControl>
+                <Stack mx={4}>
+                  <Flex direction="row">
+                    <FormControl.Label>Header</FormControl.Label>
+                    <StaggerCop
+                      ml={1}
+                      onPress={() =>
+                        setApi({...api, header: props.config.header})
+                      }></StaggerCop>
+                  </Flex>
+                  <TextArea
+                    h={20}
+                    placeholder="Header data"
+                    w={{
+                      base: '100%',
+                    }}
+                    value={api.header}
+                    onChangeText={value => setApi({...api, header: value})}
+                    autoCompleteType={undefined}
+                  />
+                </Stack>
+              </FormControl>
+              <FormControl>
+                <Stack mx={4}>
+                  <Flex direction="row">
+                    <FormControl.Label>List Token</FormControl.Label>
+                    {/* <StaggerCop
                   ml={1}
                   onPress={() =>
                     setApi({...api, header: props.config.header})
                   }></StaggerCop> */}
-              </Flex>
-              <TextArea
-                h={20}
-                placeholder="Store Tokens"
-                w={{
-                  base: '100%',
-                }}
-                value={api.tokens}
-                onChangeText={value => setApi({...api, tokens: value})}
-                autoCompleteType={undefined}
-              />
-            </Stack>
-          </FormControl>
+                  </Flex>
+                  <TextArea
+                    h={20}
+                    placeholder="Store Tokens"
+                    w={{
+                      base: '100%',
+                    }}
+                    value={api.tokens}
+                    onChangeText={value => setApi({...api, tokens: value})}
+                    autoCompleteType={undefined}
+                  />
+                </Stack>
+              </FormControl>
+            </>
           ) : null}
           <FormControl>
             <Stack mx={4}>

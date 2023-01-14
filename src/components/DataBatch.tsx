@@ -27,6 +27,10 @@ function DataBatch(props: {
   }, [props.playList]);
 
   useEffect(() => {
+    setLoading(false);
+  }, [props.idSelected, playList, data]);
+
+  useEffect(() => {
     if (!Number.isNaN(props.idSelected) && !isLoading) {
       loadMp3();
     }
@@ -75,8 +79,8 @@ function DataBatch(props: {
         if (isChange) {
           setPlay(playList);
           props.setPlayList(playList);
+          setLoading(false);
         }
-        setLoading(false);
       });
     } else {
       setLoading(false);
