@@ -3,7 +3,7 @@ import {CHANGE_WEB_INFO, NOTI_LOAD_NEW} from './ActionType';
 const initState = {
   currentURL: 'https://truyenfull.vn/than-dao-dan-ton-606028/chuong-1/',
   nextURL: '',
-  selector: '#chapter-c',
+  selector: '.chapter-title,#chapter-c',
   nextSelector: '#next_chap',
   contentHTML: '',
   content: '',

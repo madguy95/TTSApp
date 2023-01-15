@@ -55,10 +55,16 @@ export function truncate(str: string, arrStr: any[], n: number): any {
   }
 
   export function getContentInHtml(html: string, selector: string): any {
-    if(html) {
+    if(html && selector) {
+      let str = "";
+      const arr = selector.split(',');
       const $ = Cheerio.load(html);
-      return $(selector).text() || "";
+      arr.forEach(x => {
+        str += ($(x).text() + " ." || "").trim();
+      })
+      return str;
     }
+    return "";
   }
 
   export function getNextLinkInHtml(html: string, selector: string): any {
