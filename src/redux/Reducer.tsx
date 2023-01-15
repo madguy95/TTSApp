@@ -15,6 +15,7 @@ const initState = {
 const reducer = (state = initState, action: { type: any; payload: any; }) => {
   switch (action.type) {
     case NOTI_LOAD_NEW:
+      console.log('notify load new');
       return {
         ...state,
         ...action.payload,

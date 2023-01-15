@@ -23,6 +23,7 @@ export function loadNew(info: {
 }
 
 export function loadNewData(currentURL: string | undefined, selector: string, nextSelector: string, limitSplit: any) {
+	console.log('call load new data');
 	return async (dispatch: (arg0: { type: string; payload: any }) => any) => {
 		if (currentURL && selector) {
 			const html = await loadHtml(currentURL);
@@ -35,6 +36,7 @@ export function loadNewData(currentURL: string | undefined, selector: string, ne
 			if (content && content != '') {
 				const arrStr = new Array();
 				truncate(content, arrStr, limitSplit || MAX_LENGTH_CHARACTER_TRUNC);
+				console.log('call load new');
 				await dispatch(
 					loadNew({
 						currentURL: currentURL,

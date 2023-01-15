@@ -37,6 +37,7 @@ function DataBatch(props: {
   }, [props.idSelected, playList, data, isLoading]);
 
   async function loadMp3() {
+    console.log("load Mp3")
     setLoading(true);
     let needLoadMore = false;
     let indexCurrent = 0;
@@ -63,6 +64,7 @@ function DataBatch(props: {
     });
     if (arrPromise.length > 0) {
       Promise.all(arrPromise).then(values => {
+        console.log('get done url')
         let isChange = false;
         values.forEach((id, index) => {
           if (id?.success) {
@@ -77,6 +79,7 @@ function DataBatch(props: {
           }
         });
         if (isChange) {
+          console.log('call update url')
           setPlay(playList);
           props.setPlayList(playList);
           setLoading(false);
@@ -87,11 +90,12 @@ function DataBatch(props: {
     }
   }
 
-  const getMp3File = async (
+  const getMp3File = (
     text: any,
     signal: any,
     timeNeedWait: any,
   ): Promise<any> => {
+    console.log('call getmp3')
     return new Promise(resolveInner => {
       delay(timeNeedWait).then(() => {
         if (data.code === ApiDefault.code) {

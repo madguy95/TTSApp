@@ -176,6 +176,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     snapshot?: any,
   ): void {
     // console.log(this.context?.data?.content ? 'DidUpdate' : '');
+    
     if (
       this.props.arrString &&
       JSON.stringify(this.props.arrString) !=
@@ -223,6 +224,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
           this.setState({playState: 'paused'});
           this.playbackInstance.setCurrentTime(0);
           if (this.state.isPlaying && this.index == this.playList.length - 1) {
+            console.log('call load new data');
             this.props.actions.loadNewData(
               this.props.nextURL,
               this.props.selector,
@@ -261,7 +263,8 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     this.playbackInstance?.setSpeed(this.state.rate);
   };
 
-  async setPlayList(playListArr: any) {
+  setPlayList(playListArr: any) {
+    console.log("set playlist")
     this.playList = playListArr;
     if (this.playbackInstance == null) {
       this._loadNewPlaybackInstance(this.state.shouldPlay);
@@ -269,13 +272,14 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   }
 
   async _loadNewPlaybackInstance(playing: boolean) {
+    console.log("call _loadNewPlaybackInstance: " + playing);
     if (this.playbackInstance) {
       this.playbackInstance.release();
       this.playbackInstance = null;
     }
-
     const uri = this.playList[this.index]?.uri;
     this.setState({index: this.index, isLoading: true, shouldPlay: playing});
+    console.log(`index ${this.index} uri ${uri} `);
     if (uri && uri != '') {
       console.log('[Play]', playing, uri);
       this.playbackInstance = await new Sound(uri, undefined, error => {

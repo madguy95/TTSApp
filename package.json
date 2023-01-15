@@ -20,6 +20,7 @@
     "native-base": "^3.4.16",
     "react": "18.1.0",
     "react-native": "0.70.1",
+    "react-native-background-timer": "^2.4.1",
     "react-native-blob-util": "^0.16.2",
     "react-native-lottie-splash-screen": "^1.0.1",
     "react-native-safe-area-context": "^4.3.4",

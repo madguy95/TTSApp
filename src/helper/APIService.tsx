@@ -66,6 +66,7 @@ export async function callApiGetMp3(
           .replace('${textsearch}', text.replace(/['"]+/g, '')),
       )
     : {};
+  console.log('call api fetch');
   return fetch(`${apiInfo.url}?${queryString}`, {
     method: apiInfo.method,
     headers: {

@@ -1,4 +1,5 @@
 import * as Cheerio from 'cheerio';
+import BackgroundTimer from 'react-native-background-timer';
 
 export const randomIntFromInterval = (min: number, max: number) => {
     // min and max included
@@ -7,7 +8,11 @@ export const randomIntFromInterval = (min: number, max: number) => {
 
 export function delay(delay: number) {
     return new Promise((r) => {
-        setTimeout(r, delay);
+        console.log('call timeout delay')
+        BackgroundTimer.setTimeout(() => {
+          r();
+        }, delay);
+        // setTimeout(r, delay);
     });
 }
 
