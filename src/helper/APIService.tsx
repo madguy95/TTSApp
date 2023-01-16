@@ -129,6 +129,10 @@ export async function downloadFile(
         .replace(/(\r\n|\n|\r)/gm, '')
         .replace('${textsearch}', text.replace(/['"]+/g, ''))
     : '';
+    
+  if (apiInfo.header?.includes("${token}")) {
+    apiInfo.header = apiInfo.header.replace('${token}', apiInfo.token);
+  }
   const header = JSON.parse(apiInfo.header) || {
     //headers...
     'Content-Type': 'application/json',

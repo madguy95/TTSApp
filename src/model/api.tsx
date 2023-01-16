@@ -1,5 +1,7 @@
 
 export declare type Api = {
+  token: string | undefined;
+  tokens: any;
   id: number,
   url: string,
   urlAudio: string,

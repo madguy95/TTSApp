@@ -1,7 +1,7 @@
 import React, {useContext, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 
-import {Text, View} from '../Themed';
+import {View} from '../Themed';
 
 import {
   Box,
@@ -12,14 +12,13 @@ import {
   TextArea,
   Button,
   ScrollView,
-  VStack,
   HStack,
   Heading,
-  Fab,
   IconButton,
   Stagger,
   useDisclose,
-  Center,
+  Select,
+  CheckIcon,
 } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ReferenceDataContext} from '../../storage/ReferenceDataContext';
@@ -28,7 +27,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {ApiDefault, ApiViettelDefault} from './config';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import ModalToken from '../TokenList';
 function StaggerCop(props) {
   const {isOpen, onToggle} = useDisclose();
   return (
@@ -70,7 +69,7 @@ function StaggerCop(props) {
     </>
   );
 }
-function ConfigAPI(props) {
+function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; }) {
   const {setData} = useContext(ReferenceDataContext);
   const [api, setApi] = React.useState<Api>({});
 
@@ -218,16 +217,33 @@ function ConfigAPI(props) {
                     setApi({...api, header: props.config.header})
                   }></StaggerCop> */}
                   </Flex>
-                  <TextArea
-                    h={20}
-                    placeholder="Store Tokens"
-                    w={{
-                      base: '100%',
+                  <ModalToken
+                    saveData={(data: any) =>
+                      setApi({...api, tokens: data})
+                    }></ModalToken>
+                  <Select
+                    minWidth="200"
+                    accessibilityLabel="Choose token"
+                    placeholder="Choose token"
+                    selectedValue={api.token}
+                    onValueChange={value => setApi({...api, token: value})}
+                    _selectedItem={{
+                      bg: 'teal.600',
+                      endIcon: <CheckIcon size={5} />,
                     }}
-                    value={api.tokens}
-                    onChangeText={value => setApi({...api, tokens: value})}
-                    autoCompleteType={undefined}
-                  />
+                    mt="1">
+                    {api.tokens?.map(
+                      (x: string, idx: React.Key | null | undefined) => {
+                        return (
+                          <Select.Item
+                            key={idx}
+                            label={`${idx} - ${x}`}
+                            value={x}
+                          />
+                        );
+                      },
+                    )}
+                  </Select>
                 </Stack>
               </FormControl>
             </>
