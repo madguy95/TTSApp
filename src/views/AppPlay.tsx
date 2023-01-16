@@ -167,7 +167,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
           }
         });
       }
-    }, 100);
+    }, 500);
   }
 
   componentDidUpdate(
@@ -602,6 +602,8 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             style={styles.playbackSlider}
             {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
             thumbImage={ICON_THUMB_1.module}
+            maximumTrackTintColor="#A6AFB1"
+            minimumTrackTintColor='#3C4142'
             value={this._getSeekSliderPosition()}
             onSlidingStart={this._onSeekSliderValueChange}
             onSlidingComplete={this._onSeekSliderSlidingComplete}
@@ -693,9 +695,12 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
               style={styles.volumeSlider}
               {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
               thumbImage={ICON_THUMB_2.module}
+              maximumTrackTintColor="#A6AFB1"
+              minimumTrackTintColor='#3C4142'
               value={1}
               onValueChange={this._onVolumeSliderValueChange}
             />
+            <Text>{Math.floor(this.state.volume * 100)}</Text>
           </View>
           <TouchableHighlight
             underlayColor={BACKGROUND_COLOR}
@@ -730,9 +735,12 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             style={styles.rateSlider}
             {...(Platform.OS === 'ios' && {trackImage: ICON_TRACK_1.module})}
             thumbImage={ICON_THUMB_1.module}
+            maximumTrackTintColor="#A6AFB1"
+            minimumTrackTintColor='#3C4142'
             value={this.state.rate / RATE_SCALE}
             onSlidingComplete={this._onRateSliderSlidingComplete}
           />
+          <Text>{this.state.rate?.toFixed(2)}</Text>
           <TouchableHighlight
             underlayColor={BACKGROUND_COLOR}
             style={styles.wrapper}
