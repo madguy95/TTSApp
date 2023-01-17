@@ -5,14 +5,13 @@
  */
 // import {FontAwesome} from '@expo/vector-icons';
 import * as React from 'react';
-import {Text, View, ColorSchemeName, Alert} from 'react-native';
+import {ColorSchemeName} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import AppPlay from '../views/AppPlay';
-import Setting from '../views/Setting';
-import DataRaw from '../views/DataRaw';
+import AppPlay from '@root/views/AppPlay';
+import Setting from '@root/views/Setting';
+import DataRaw from '@root/views/DataRaw';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Button } from 'native-base';
-import ButtonHeader from '../components/header/ButtonHeader';
+import ButtonHeader from '@root/components/header/ButtonHeader';
 
 function HomeScreen() {
   return <AppPlay></AppPlay>;
@@ -33,9 +32,17 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
-  const screenOption = ({route}) => ({
-    tabBarIcon: ({focused, color, size}) => {
-      let iconName;
+  const screenOption = ({route}: {route: any}) => ({
+    tabBarIcon: ({
+      focused,
+      color,
+      size,
+    }: {
+      focused: boolean;
+      color: string;
+      size: any;
+    }) => {
+      let iconName = '';
 
       if (route.name === 'Play') {
         iconName = focused ? 'musical-notes-outline' : 'musical-notes';
@@ -54,11 +61,15 @@ export default function Navigation({
 
   return (
     <Tab.Navigator screenOptions={screenOption}>
-      <Tab.Screen name="Play" component={HomeScreen} options={{
-        headerRight: () => {
-          return (<ButtonHeader />)
-        }
-      }}/>
+      <Tab.Screen
+        name="Play"
+        component={HomeScreen}
+        options={{
+          headerRight: () => {
+            return <ButtonHeader />;
+          },
+        }}
+      />
       <Tab.Screen name="Data" component={DataScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

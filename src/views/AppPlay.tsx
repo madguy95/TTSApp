@@ -4,29 +4,24 @@
 import React from 'react';
 import {
   Alert,
-  Dimensions,
   Image,
   Platform,
-  StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Slider from '@react-native-community/slider';
-import ListItemPlay from '../components/ListItemPlay';
-import DataBatch from '../components/DataBatch';
-import {ReferenceDataContext} from '../storage/ReferenceDataContext';
-import {PlaylistItem} from '../model/api';
-import {loadNew, loadNewData} from '../redux/Actions';
+import DataBatch from '@root/helper/DataBatch';
+import {ReferenceDataContext} from '@root/storage/ReferenceDataContext';
+import {PlaylistItem} from '@root/model/api';
+import {loadNew, loadNewData} from '@root/redux/Actions';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
 
 import {
   ICON_BACK_BUTTON,
   ICON_FORWARD_BUTTON,
-  ICON_LOOP_ALL_BUTTON,
-  ICON_LOOP_ONE_BUTTON,
   ICON_MUTED_BUTTON,
   ICON_PAUSE_BUTTON,
   ICON_PLAY_BUTTON,
@@ -35,55 +30,31 @@ import {
   ICON_THUMB_2,
   ICON_TRACK_1,
   ICON_UNMUTED_BUTTON,
-} from '../constants/Icon';
-
+} from '@root/constants/Icon';
+import ListItemPlay from '@root/components/ListItemPlay';
+import {AppPlayStyle as styles} from '@root/constants/styles';
+import {
+  BACKGROUND_COLOR,
+  DEVICE_WIDTH,
+  DISABLED_OPACITY,
+  VIDEO_CONTAINER_HEIGHT,
+} from '@root/constants/styles/DefaultStyle';
+import { LOADING_STRING, LOOPING_TYPE_ALL, LOOPING_TYPE_ICONS, LOOPING_TYPE_ONE, PlAYLIST, RATE_SCALE } from '@root/constants';
 Sound.setCategory('Playback');
 
-const PlAYLIST = [
-  new PlaylistItem(
-    0,
-    'Comfort Fit - “Sorry”',
-    'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3',
-    false,
-  ),
-  new PlaylistItem(
-    1,
-    'Mildred Bailey – “All Of Me”',
-    'https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3',
-    false,
-  ),
-  new PlaylistItem(
-    2,
-    'Podington Bear - “Rubber Robot”',
-    'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3',
-    false,
-  ),
-];
-
-const LOOPING_TYPE_ALL = 0;
-const LOOPING_TYPE_ONE = 1;
-const LOOPING_TYPE_ICONS = {0: ICON_LOOP_ALL_BUTTON, 1: ICON_LOOP_ONE_BUTTON};
-
-const {width: DEVICE_WIDTH, height: DEVICE_HEIGHT} = Dimensions.get('window');
-const BACKGROUND_COLOR = '#FFF8ED';
-const DISABLED_OPACITY = 0.5;
-const FONT_SIZE = 14;
-const LOADING_STRING = '... loading ...';
-const BUFFERING_STRING = '...buffering...';
-const RATE_SCALE = 3.0;
-const VIDEO_CONTAINER_HEIGHT = (DEVICE_HEIGHT * 2.0) / 5.0 - FONT_SIZE * 2;
 type MyProps = {
-  arrString: [];
-  nextURL: string;
-  selector: string;
-  nextSelector: string;
-  limitSplit: number;
-  actions: any;
+  needLoad?: any;
+  arrString?: [];
+  nextURL?: string;
+  selector?: string;
+  nextSelector?: string;
+  limitSplit?: number;
+  actions?: any;
 };
+
 type MyState = {
   index: number;
   isSeeking: boolean;
-  showVideo: boolean;
   playbackInstanceName: string;
   loopingType: number;
   muted: boolean;
@@ -91,23 +62,16 @@ type MyState = {
   playbackInstanceDuration: number | null;
   shouldPlay: boolean;
   isPlaying: boolean;
-  isBuffering: boolean;
   isLoading: boolean;
-  fontLoaded: boolean;
-  shouldCorrectPitch: boolean;
   volume: number;
   rate: number;
   videoWidth: number;
   videoHeight: number;
-  poster: boolean;
-  useNativeControls: boolean;
-  fullscreen: boolean;
-  throughEarpiece: boolean;
   playList: PlaylistItem[];
   content: [];
   playState: string;
 };
-class AppPlay extends React.Component<MyProps | never, MyState> {
+class AppPlay extends React.Component<MyProps | any, MyState | any> {
   static contextType = ReferenceDataContext;
   index: number;
   shouldPlayAtEndOfSeek: boolean;
@@ -123,7 +87,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     this.state = {
       index: 0,
       isSeeking: false,
-      showVideo: false,
       playbackInstanceName: LOADING_STRING,
       loopingType: LOOPING_TYPE_ALL,
       muted: false,
@@ -131,18 +94,11 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
       playbackInstanceDuration: null,
       shouldPlay: false,
       isPlaying: false,
-      isBuffering: false,
       isLoading: true,
-      fontLoaded: false,
-      shouldCorrectPitch: true,
       volume: 1.0,
       rate: 1.0,
       videoWidth: DEVICE_WIDTH,
       videoHeight: VIDEO_CONTAINER_HEIGHT,
-      poster: false,
-      useNativeControls: false,
-      fullscreen: false,
-      throughEarpiece: false,
       playList: PlAYLIST,
       content: [],
       playState: 'paused',
@@ -151,7 +107,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
 
   componentDidMount() {
     this._loadNewPlaybackInstance(false);
-    this.setState({fontLoaded: true});
     this.timeout = setInterval(() => {
       if (
         this.playbackInstance &&
@@ -176,7 +131,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     snapshot?: any,
   ): void {
     // console.log(this.context?.data?.content ? 'DidUpdate' : '');
-    
+
     if (
       this.props.arrString &&
       JSON.stringify(this.props.arrString) !=
@@ -264,7 +219,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   };
 
   setPlayList(playListArr: any) {
-    console.log("set playlist")
+    console.log('set playlist');
     this.playList = playListArr;
     if (this.playbackInstance == null) {
       this._loadNewPlaybackInstance(this.state.shouldPlay);
@@ -272,7 +227,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   }
 
   async _loadNewPlaybackInstance(playing: boolean) {
-    console.log("call _loadNewPlaybackInstance: " + playing);
+    console.log('call _loadNewPlaybackInstance: ' + playing);
     if (this.playbackInstance) {
       this.playbackInstance.release();
       this.playbackInstance = null;
@@ -307,7 +262,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   _updateScreenForLoading(isLoading: boolean) {
     if (isLoading) {
       this.setState({
-        showVideo: false,
         playbackInstanceName: LOADING_STRING,
         playbackInstanceDuration: null,
         playbackInstancePosition: null,
@@ -316,38 +270,10 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     } else {
       this.setState({
         playbackInstanceName: this.state.playList[this.index].name,
-        showVideo: this.state.playList[this.index].isVideo,
         isLoading: false,
       });
     }
   }
-
-  _onReadyForDisplay = (event: {
-    naturalSize: {height: number; width: number};
-  }) => {
-    const widestHeight =
-      (DEVICE_WIDTH * event.naturalSize.height) / event.naturalSize.width;
-    if (widestHeight > VIDEO_CONTAINER_HEIGHT) {
-      this.setState({
-        videoWidth:
-          (VIDEO_CONTAINER_HEIGHT * event.naturalSize.width) /
-          event.naturalSize.height,
-        videoHeight: VIDEO_CONTAINER_HEIGHT,
-      });
-    } else {
-      this.setState({
-        videoWidth: DEVICE_WIDTH,
-        videoHeight:
-          (DEVICE_WIDTH * event.naturalSize.height) / event.naturalSize.width,
-      });
-    }
-  };
-
-  _onFullscreenUpdate = (event: {fullscreenUpdate: any}) => {
-    console.log(
-      `FULLSCREEN UPDATE : ${JSON.stringify(event.fullscreenUpdate)}`,
-    );
-  };
 
   _advanceIndex(forward: boolean) {
     this.index =
@@ -385,7 +311,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     if (this.playbackInstance != null) {
       this.playbackInstance.stop();
       this.setState({
-        showVideo: false,
         shouldPlay: false,
         isPlaying: false,
         playbackInstancePosition: 0,
@@ -439,7 +364,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     }
   };
 
-  _trySetRate = (rate: any, shouldCorrectPitch: boolean) => {
+  _trySetRate = (rate: any) => {
     this.setState({rate: rate});
     if (this.playbackInstance && this.playbackInstance.isPlaying()) {
       try {
@@ -451,11 +376,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   };
 
   _onRateSliderSlidingComplete = async (value: number) => {
-    this._trySetRate(value * RATE_SCALE, this.state.shouldCorrectPitch);
-  };
-
-  _onPitchCorrectionPressed = async (value: any) => {
-    this._trySetRate(this.state.rate, !this.state.shouldCorrectPitch);
+    this._trySetRate(value * RATE_SCALE);
   };
 
   _onSeekSliderValueChange = (value: any) => {
@@ -521,39 +442,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
     return '';
   }
 
-  _onPosterPressed = () => {
-    this.setState({poster: !this.state.poster});
-  };
-
-  _onUseNativeControlsPressed = () => {
-    this.setState({useNativeControls: !this.state.useNativeControls});
-  };
-
-  _onFullscreenPressed = () => {
-    //  try {
-    //    this._video.presentFullscreenPlayer();
-    //  } catch (error) {
-    //    console.log(error.toString());
-    //  }
-  };
-
-  _onSpeakerPressed = () => {
-    //  this.setState(
-    //    state => {
-    //      return { throughEarpiece: !state.throughEarpiece };
-    //    },
-    //    () =>
-    //      Audio.setAudioModeAsync({
-    //        allowsRecordingIOS: false,
-    //        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-    //        playsInSilentModeIOS: true,
-    //        shouldDuckAndroid: true,
-    //        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-    //        playThroughEarpieceAndroid: this.state.throughEarpiece
-    //      })
-    //  );
-  };
-
   _onChangeSelect = (id: any) => {
     this.index = id;
     this.setState({index: id});
@@ -564,9 +452,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
   };
 
   render() {
-    return !this.state.fontLoaded ? (
-      <View style={styles.emptyContainer} />
-    ) : (
+    return (
       <View style={styles.container}>
         <View />
         <View style={styles.nameContainer}>
@@ -610,14 +496,6 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             disabled={this.state.isLoading}
           />
           <View style={styles.timestampRow}>
-            <Text
-              style={[
-                styles.text,
-                styles.buffering,
-                // {fontFamily: 'cutive-mono-regular'},
-              ]}>
-              {this.state.isBuffering ? BUFFERING_STRING : ''}
-            </Text>
             <Text
               style={[
                 styles.text,
@@ -700,7 +578,9 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
               value={1}
               onValueChange={this._onVolumeSliderValueChange}
             />
-            <Text style={[styles.text]}>{Math.floor(this.state.volume * 100)}</Text>
+            <Text style={[styles.text]}>
+              {Math.floor(this.state.volume * 100)}
+            </Text>
           </View>
           <TouchableHighlight
             underlayColor={BACKGROUND_COLOR}
@@ -725,7 +605,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             underlayColor={BACKGROUND_COLOR}
             style={styles.wrapper}
             onPress={() =>
-              this._trySetRate(1.0, this.state.shouldCorrectPitch)
+              this._trySetRate(1.0)
             }>
             <View style={styles.button}>
               <Text style={[styles.text]}>Rate:</Text>
@@ -741,89 +621,23 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             onSlidingComplete={this._onRateSliderSlidingComplete}
           />
           <Text style={[styles.text]}>{this.state.rate?.toFixed(2)}</Text>
-          <TouchableHighlight
-            underlayColor={BACKGROUND_COLOR}
-            style={styles.wrapper}
-            onPress={this._onPitchCorrectionPressed}>
-            <View style={styles.button}>
-              <Text style={[styles.text]}>
-                PC: {this.state.shouldCorrectPitch ? 'yes' : 'no'}
-              </Text>
-            </View>
-          </TouchableHighlight>
-          {/*<TouchableHighlight
-             onPress={this._onSpeakerPressed}
-             underlayColor={BACKGROUND_COLOR}
-           >
-              <MaterialIcons
-               name={
-                 this.state.throughEarpiece
-                   ? ICON_THROUGH_EARPIECE
-                   : ICON_THROUGH_SPEAKER
-               }
-               size={32}
-               color="black"
-             />
-           </TouchableHighlight>*/}
         </View>
         <View />
-        {this.state.showVideo ? (
-          <View>
-            <View
-              style={[
-                styles.buttonsContainerBase,
-                styles.buttonsContainerTextRow,
-              ]}>
-              <View />
-              <TouchableHighlight
-                underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
-                onPress={this._onPosterPressed}>
-                <View style={styles.button}>
-                  <Text style={[styles.text]}>
-                    Poster: {this.state.poster ? 'yes' : 'no'}
-                  </Text>
-                </View>
-              </TouchableHighlight>
-              <View />
-              <TouchableHighlight
-                underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
-                onPress={this._onFullscreenPressed}>
-                <View style={styles.button}>
-                  <Text style={[styles.text]}>Fullscreen</Text>
-                </View>
-              </TouchableHighlight>
-              <View />
-            </View>
-            <View style={styles.space} />
-            <View
-              style={[
-                styles.buttonsContainerBase,
-                styles.buttonsContainerTextRow,
-              ]}>
-              <View />
-              <TouchableHighlight
-                underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
-                onPress={this._onUseNativeControlsPressed}>
-                <View style={styles.button}>
-                  <Text style={[styles.text]}>
-                    Native Controls:{' '}
-                    {this.state.useNativeControls ? 'yes' : 'no'}
-                  </Text>
-                </View>
-              </TouchableHighlight>
-              <View />
-            </View>
-          </View>
-        ) : null}
       </View>
     );
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: {
+  reducer: {
+    needLoad?: any;
+    selector?: any;
+    nextSelector?: any;
+    limitSplit?: any;
+    nextURL?: any;
+    arrString?: any;
+  };
+}): MyProps => ({
   needLoad: state.reducer.needLoad,
   selector: state.reducer.selector,
   nextSelector: state.reducer.nextSelector,
@@ -834,120 +648,8 @@ const mapStateToProps = state => ({
 
 const ActionCreators = Object.assign({}, {loadNew, loadNewData});
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppPlay);
-
-const styles = StyleSheet.create({
-  emptyContainer: {
-    alignSelf: 'stretch',
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  wrapper: {},
-  nameContainer: {
-    height: FONT_SIZE,
-  },
-  space: {
-    height: FONT_SIZE,
-  },
-  videoContainer: {
-    height: VIDEO_CONTAINER_HEIGHT,
-  },
-  video: {
-    maxWidth: DEVICE_WIDTH,
-  },
-  playbackContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    minHeight: ICON_THUMB_1.height * 2.0,
-    maxHeight: ICON_THUMB_1.height * 2.0,
-  },
-  playbackSlider: {
-    alignSelf: 'stretch',
-  },
-  timestampRow: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    alignSelf: 'stretch',
-    minHeight: FONT_SIZE,
-  },
-  text: {
-    fontSize: FONT_SIZE,
-    minHeight: FONT_SIZE * 2,
-    lineHeight: FONT_SIZE,
-    overflow: 'hidden',
-    color: 'dimgrey',
-    // whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  },
-  buffering: {
-    textAlign: 'left',
-    paddingLeft: 20,
-  },
-  timestamp: {
-    textAlign: 'right',
-    paddingRight: 20,
-  },
-  button: {
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  buttonsContainerBase: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  buttonsContainerTopRow: {
-    maxHeight: ICON_PLAY_BUTTON.height,
-    minWidth: DEVICE_WIDTH / 2.0,
-    maxWidth: DEVICE_WIDTH / 2.0,
-  },
-  buttonsContainerMiddleRow: {
-    maxHeight: ICON_MUTED_BUTTON.height,
-    alignSelf: 'stretch',
-    paddingRight: 20,
-  },
-  volumeContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minWidth: DEVICE_WIDTH / 2.0,
-    maxWidth: DEVICE_WIDTH / 2.0,
-  },
-  volumeSlider: {
-    width: DEVICE_WIDTH / 2.0 - ICON_MUTED_BUTTON.width,
-  },
-  buttonsContainerBottomRow: {
-    maxHeight: ICON_THUMB_1.height,
-    alignSelf: 'stretch',
-    paddingRight: 20,
-    paddingLeft: 20,
-  },
-  rateSlider: {
-    width: DEVICE_WIDTH / 2.0,
-  },
-  buttonsContainerTextRow: {
-    maxHeight: FONT_SIZE,
-    alignItems: 'center',
-    paddingRight: 20,
-    paddingLeft: 20,
-    minWidth: DEVICE_WIDTH,
-    maxWidth: DEVICE_WIDTH,
-  },
-});

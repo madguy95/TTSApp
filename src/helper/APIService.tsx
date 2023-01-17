@@ -1,10 +1,13 @@
-import {delay, objToQueryString} from '../utils';
-import {Api} from '../model/api';
+import {delay, objToQueryString} from '@root/utils';
+import {Api} from '@root/model/api';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {Platform} from 'react-native';
 import _ from 'lodash';
-
-const HTTP_STRING = {
+import { ApiDefault } from '@root/constants';
+interface MyExactData {
+  [key: string]: string;
+}
+const HTTP_STRING: MyExactData = {
   '200': 'OK',
   '201': 'Created',
   '202': 'Accepted',
@@ -48,13 +51,19 @@ const HTTP_STRING = {
   '505': 'HTTP Version Not Supported',
 };
 
-export function appendValueToKey(key, value, obj, ...fields) {
+export function appendValueToKey(
+  key: any,
+  value: any,
+  obj: {[x: string]: string},
+  ...fields: any[]
+) {
   fields.forEach(field => {
     if (obj[field] && _.isString(obj[field])) {
       obj[field] = obj[field].replace(key, value);
     }
   });
 }
+
 export async function callApiGetMp3(
   text: string,
   signal: any,
@@ -90,7 +99,8 @@ export async function callApiGetMp3(
       if (!response.ok) {
         const error = {
           status: response.status,
-          statusText: response.statusText || HTTP_STRING[response.status],
+          statusText:
+            response.statusText || HTTP_STRING[_.toString(response.status)],
         };
         return {
           success: false,
@@ -131,9 +141,7 @@ const FOLDER_FILE =
 export async function downloadFile(
   text: string,
   id: string,
-  apiInfo: {
-    token: string;body: string; header: string; method: string; url: string
-},
+  apiInfo: Api,
 ) {
   // console.log(RNFetchBlob.fs.dirs.DocumentDir);
   const bodyStr = apiInfo.body
@@ -141,8 +149,8 @@ export async function downloadFile(
         .replace(/(\r\n|\n|\r)/gm, '')
         .replace('${textsearch}', text.replace(/['"]+/g, ''))
     : '';
-    
-  if (apiInfo.header?.includes("${token}") && apiInfo.token) {
+
+  if (apiInfo.header?.includes('${token}') && apiInfo.token) {
     apiInfo.header = apiInfo.header.replace('${token}', apiInfo.token);
   }
   const header = JSON.parse(apiInfo.header) || {
@@ -159,7 +167,7 @@ export async function downloadFile(
   // removeFileIfExist(FOLDER_FILE + '/' + id + '.' + ext);
   const res = await ReactNativeBlobUtil.config({
     path: FOLDER_FILE + '/' + id + '.' + ext,
-  }).fetch(apiInfo.method, apiInfo.url, header, bodyStr);
+  }).fetch(_.toUpper(apiInfo.method) as Methods, apiInfo.url, header, bodyStr);
   if (res.info().status !== 200) {
     removeFileIfExist(res.path());
     return {success: false, message: res.json()};
@@ -167,7 +175,19 @@ export async function downloadFile(
   return {success: true, id: res.path()};
 }
 
-export async function removeFileIfExist(path) {
+type Methods =
+  | 'POST'
+  | 'GET'
+  | 'DELETE'
+  | 'PUT'
+  | 'PATCH'
+  | 'post'
+  | 'get'
+  | 'delete'
+  | 'put'
+  | 'patch';
+
+export async function removeFileIfExist(path: string) {
   if (await ReactNativeBlobUtil.fs.exists(path)) {
     await ReactNativeBlobUtil.fs.unlink(path);
     console.log('deleted {}', path);
@@ -181,10 +201,36 @@ export async function cleanTmpFileCache() {
       .ls(FOLDER_FILE)
       // files will an array contains filenames
       .then((files: any) => {
-        files.forEach(item =>
+        files.forEach((item: string) =>
           ReactNativeBlobUtil.fs.unlink(FOLDER_FILE + '/' + item),
         );
       });
     // console.log(filesArr);
   }
 }
+
+export const tranferTTS = (
+  data: Api,
+  text: any,
+  signal: any,
+  timeNeedWait: any,
+): Promise<any> => {
+  console.log('call getmp3');
+  return new Promise(resolveInner => {
+    delay(timeNeedWait).then(() => {
+      if (data.code === ApiDefault.code) {
+        resolveInner(callApiGetMp3(text, signal, data));
+      } else {
+        resolveInner(downloadFile(text, signal, data));
+      }
+    });
+  });
+};
+
+export const processResult = (data: Api, res: any) => {
+  if (data.code === ApiDefault.code) {
+    return data.urlAudio + '/' + res.id;
+  } else {
+    return res.id;
+  }
+};

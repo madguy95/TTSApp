@@ -1,10 +1,18 @@
 import {Box, Button, Popover} from 'native-base';
+import React from 'react';
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactFragment,
+  ReactPortal,
+  Key,
+} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {Text} from '../Themed';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
+import {Text} from '@root/components/Themed';
 
-function ButtonHeader(props) {
+function ButtonHeader(props: {errors: any}) {
   const {errors} = props;
   return (
     <Box>
@@ -29,16 +37,32 @@ function ButtonHeader(props) {
           {/* <Popover.Header>Logs</Popover.Header> */}
           <Popover.Body bgColor={'black'}>
             {errors && errors.length > 0 ? (
-              errors.map((item, i) => {
-                return (
-                  <Text style={{color: 'cornsilk'}} key={i}>
-                    $ {item.date}{' '}
-                    {item && Object.keys(item.message).length !== 0
-                      ? JSON.stringify(item.message)
-                      : item?.message?.toString()}
-                  </Text>
-                );
-              })
+              errors.map(
+                (
+                  item: {
+                    date:
+                      | string
+                      | number
+                      | boolean
+                      | ReactElement<any, string | JSXElementConstructor<any>>
+                      | ReactFragment
+                      | ReactPortal
+                      | null
+                      | undefined;
+                    message: {toString?: any};
+                  },
+                  i: Key | null | undefined,
+                ) => {
+                  return (
+                    <Text style={{color: 'cornsilk'}} key={i}>
+                      $ {item.date}{' '}
+                      {item && Object.keys(item.message).length !== 0
+                        ? JSON.stringify(item.message)
+                        : item?.message?.toString()}
+                    </Text>
+                  );
+                },
+              )
             ) : (
               <Text style={{color: 'cornsilk'}}>'Nothing...'</Text>
             )}
@@ -49,13 +73,13 @@ function ButtonHeader(props) {
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: {logReducer: {errors: any}}) => ({
   errors: state.logReducer.errors,
 });
 
 const ActionCreators = Object.assign({}, {});
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 

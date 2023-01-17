@@ -1,11 +1,9 @@
 import React from 'react';
 import {
   Button,
-  Center,
   IconButton,
   Modal,
   ScrollView,
-  Text,
   TextArea,
   View,
   VStack,
@@ -13,7 +11,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import _ from 'lodash';
 
-function ModalToken(props) {
+function ModalToken(props: {[key: string]: any; saveData: any; data: any}) {
   const {saveData} = props;
   const [modalVisible, setModalVisible] = React.useState(false);
   const [size, setSize] = React.useState('md');
@@ -21,7 +19,7 @@ function ModalToken(props) {
     _.isArray(props.data) ? _.join(props.data, '\n') : '',
   );
 
-  const handleSizeClick = newSize => {
+  const handleSizeClick = (newSize: string) => {
     setSize(newSize);
     setModalVisible(!modalVisible);
   };
@@ -33,15 +31,12 @@ function ModalToken(props) {
 
   const close = () => {
     setModalVisible(false);
-    setData(_.isArray(props.data) ? _.join(props.data, '\n') : '')
-  }
+    setData(_.isArray(props.data) ? _.join(props.data, '\n') : '');
+  };
 
   return (
     <View {...props}>
-      <Modal
-        isOpen={modalVisible}
-        onClose={close}
-        size={size}>
+      <Modal isOpen={modalVisible} onClose={close} size={size}>
         <Modal.Content maxH="420">
           <Modal.CloseButton />
           <Modal.Header>List Token</Modal.Header>
@@ -56,10 +51,7 @@ function ModalToken(props) {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button
-                variant="ghost"
-                colorScheme="blueGray"
-                onPress={close}>
+              <Button variant="ghost" colorScheme="blueGray" onPress={close}>
                 Cancel
               </Button>
               <Button colorScheme={'gray'} onPress={save}>

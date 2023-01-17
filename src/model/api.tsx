@@ -3,12 +3,14 @@ export declare type Api = {
   token: string | undefined;
   tokens: any;
   id: number,
+  code: any;
   url: string,
   urlAudio: string,
   queryString: string,
   body: string,
   method: string,
-  content: []
+  content: [],
+  header: any
 }
 
 export class PlaylistItem {

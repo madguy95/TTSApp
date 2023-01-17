@@ -1,14 +1,14 @@
 import React, {memo, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   ListRenderItemInfo,
   StyleSheet,
   View,
 } from 'react-native';
-import {PlaylistItem} from '../model/api';
-import ItemText from './ItemText';
+import {PlaylistItem} from '@root/model/api';
+import ItemText from '@root/components/ItemText';
+import {DEVICE_WIDTH} from '@root/constants/styles/DefaultStyle';
 
 const ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
   const {idSelected, onChange} = props;
@@ -28,15 +28,7 @@ const ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
           name: any;
           isSelect: boolean;
           uri: string;
-          selectedClass: {
-            paddingVertical: number;
-            margin: number;
-            flexDirection: 'row';
-            backgroundColor: string;
-            justifyContent: 'flex-start';
-            alignItems: 'center';
-            zIndex: number;
-          };
+          selectedClass: any;
         },
         index: any,
       ) => {
@@ -86,8 +78,6 @@ const ListItem = (props: {data?: any; idSelected?: any; onChange?: any}) => {
 };
 
 export default memo(ListItem);
-
-const {width: DEVICE_WIDTH} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

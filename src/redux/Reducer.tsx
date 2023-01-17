@@ -1,4 +1,4 @@
-import {CHANGE_WEB_INFO, NOTI_LOAD_NEW} from './ActionType';
+import {CHANGE_WEB_INFO, NOTI_LOAD_NEW} from '@root/redux/ActionType';
 
 const initState = {
   currentURL: 'https://truyenfull.vn/than-dao-dan-ton-606028/chuong-1/',
@@ -12,7 +12,7 @@ const initState = {
   loadedConfig: false,
 };
 
-const reducer = (state = initState, action: { type: any; payload: any; }) => {
+const reducer = (state = initState, action: {type: any; payload: any}) => {
   switch (action.type) {
     case NOTI_LOAD_NEW:
       console.log('notify load new');

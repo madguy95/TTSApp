@@ -1,8 +1,6 @@
 import React, {useContext, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 
-import {View} from '../Themed';
-
 import {
   Box,
   FormControl,
@@ -21,14 +19,18 @@ import {
   CheckIcon,
 } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ReferenceDataContext} from '../../storage/ReferenceDataContext';
-import {Api} from '../../model/api';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {ApiDefault, ApiViettelDefault} from './config';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ModalToken from '../TokenList';
-function StaggerCop(props) {
+import {
+  ApiDefault,
+  ApiViettelDefault,
+} from '@root/constants';
+import ModalToken from '@root/components/TokenList';
+import {View} from '@root/components/Themed';
+import {ReferenceDataContext} from '@root/storage/ReferenceDataContext';
+import {Api} from '@root/model/api';
+import { BACKGROUND_COLOR } from '@root/constants/styles/DefaultStyle';
+
+function StaggerCop(props: any) {
   const {isOpen, onToggle} = useDisclose();
   return (
     <>
@@ -52,7 +54,7 @@ function StaggerCop(props) {
         </HStack>
       </Box>
       <Box alignItems="center">
-        <Stagger visible={isOpen} {...propsStagger}>
+        <Stagger visible={isOpen} {...(propsStagger as any)}>
           <IconButton
             mt={1}
             variant="solid"
@@ -69,9 +71,9 @@ function StaggerCop(props) {
     </>
   );
 }
-function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; }) {
+function ConfigAPI(props: {name: any; config: any}) {
   const {setData} = useContext(ReferenceDataContext);
-  const [api, setApi] = React.useState<Api>({});
+  const [api, setApi] = React.useState<Api>({} as Api);
 
   useEffect(() => {
     loadData();
@@ -212,16 +214,11 @@ function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; })
                   <Flex direction="row">
                     <FormControl.Label>List Token</FormControl.Label>
                     <ModalToken
-                    m={1}
-                    data={api.tokens}
-                    saveData={(data: any) =>
-                      setApi({...api, tokens: data})
-                    }></ModalToken>
-                    {/* <StaggerCop
-                  ml={1}
-                  onPress={() =>
-                    setApi({...api, header: props.config.header})
-                  }></StaggerCop> */}
+                      m={1}
+                      data={api.tokens}
+                      saveData={(data: any) =>
+                        setApi({...api, tokens: data})
+                      }></ModalToken>
                   </Flex>
                   <Select
                     minWidth="200"
@@ -229,7 +226,7 @@ function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; })
                     placeholder="Choose token"
                     selectedValue={api.token}
                     onValueChange={value => {
-                      setApi({...api, token: value})
+                      setApi({...api, token: value});
                     }}
                     _selectedItem={{
                       bg: 'teal.600',
@@ -331,21 +328,6 @@ function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; })
   );
 }
 
-const mapStateToProps = state => ({
-  selector: state.reducer.selector,
-  nextSelector: state.reducer.nextSelector,
-  limitSplit: state.reducer.limitSplit,
-  nextURL: state.reducer.nextURL,
-  currentURL: state.reducer.currentURL,
-  loadedConfig: state.reducer.loadedConfig,
-});
-
-const ActionCreators = Object.assign({}, {});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
-});
-
 export default ConfigAPI;
 
 const propsStagger = {
@@ -388,7 +370,7 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF8ED',
+    backgroundColor: BACKGROUND_COLOR,
   },
   scroll: {
     width: '100%',
@@ -400,7 +382,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#FFF8ED',
+    backgroundColor: BACKGROUND_COLOR,
   },
   title: {
     fontSize: 20,

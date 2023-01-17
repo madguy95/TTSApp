@@ -7,32 +7,51 @@ import {
   TextArea,
   ScrollView,
   HStack,
-  Box,
 } from 'native-base';
 import {Platform} from 'react-native';
-import {StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
-import {Text, View} from '../components/Themed';
 import {useRef} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {loadNew, loadNewData, updateWebInfo} from '../redux/Actions';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
+import _ from 'lodash';
 
-function DataRaw(props) {
+import {loadNew, loadNewData, updateWebInfo} from '@root/redux/Actions';
+import {DataRawStyle as styles} from '@root/constants/styles';
+import {Text, View} from '@root/components/Themed';
+
+function DataRaw(props: {
+  actions?: any;
+  content?: any;
+  selector?: any;
+  nextSelector?: any;
+  limitSplit?: any;
+  nextURL?: any;
+  currentURL?: any;
+}) {
   const {content} = props;
   const {selector, nextSelector, limitSplit, nextURL, currentURL} = props;
   const [inputURL, setInputURl] = React.useState(currentURL);
   const gridIframe = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = React.useState(false);
-
+  const [limit, setLimit] = React.useState(limitSplit);
   const webViewRef = useRef<any>(null);
 
   useEffect(() => {
     setLoading(false);
   }, [content, inputURL, selector, nextSelector, limitSplit]);
 
-  function updateWeb(obj) {
+  useEffect(() => {
+    setLimit(limitSplit);
+    console.log(limitSplit)
+  }, [limitSplit]);
+  
+  function updateWeb(obj: {
+    selector?: string;
+    nextSelector?: string;
+    limitSplit?: number;
+    currentURL?: any;
+  }) {
     props.actions.updateWebInfo({
       selector,
       nextSelector,
@@ -80,7 +99,7 @@ function DataRaw(props) {
               _text={{
                 color: 'coolGray.800',
               }}>
-              <Text>Query selector</Text>
+              <Text style={styles.text}>Query selector</Text>
               <Stack>
                 <HStack>
                   <Input
@@ -101,14 +120,17 @@ function DataRaw(props) {
                 </HStack>
               </Stack>
 
-              <Text>Max length</Text>
+              <Text style={styles.text}>Max length</Text>
               <Input
                 keyboardType="numeric"
                 type="text"
-                value={limitSplit.toString()}
-                onChangeText={value =>
-                  updateWeb({limitSplit: !isNaN(value) ? parseInt(value) : 0})
-                }
+                value={limit}
+                onChangeText={value => setLimit(value)}
+                onSubmitEditing={event => {
+                  updateWeb({
+                    limitSplit: !isNaN(limit) ? parseInt(limit) : 500,
+                  });
+                }}
                 placeholder="limit string length to split"
               />
             </Flex>
@@ -147,7 +169,7 @@ function DataRaw(props) {
           </Stack>
           <Stack mx="4"></Stack>
           <Stack mx="4">
-            <Text>Trang web url</Text>
+            <Text style={styles.text}>Trang web url</Text>
             <Input
               type="text"
               value={inputURL}
@@ -206,32 +228,31 @@ function DataRaw(props) {
                 />
               </Flex>
             </View>
-            <ScrollView style={styles.scroll} >
-            <View style={styles.webview}>
-              {currentURL ? (
-                <WebView
-                  ref={webViewRef}
-                  source={{uri: currentURL}}
-                  style={{
-                    marginTop: 22,
-                    flex: 1,
-                    margin: 'auto',
-                    width: '100%',
-                    height: '100%',
-                  }}
-                  allowsFullscreenVideo={false}
-                  onNavigationStateChange={({url, canGoBack}) => {
-                    setInputURl(url);
-                  }}
-                  scrollEnabled={true}
-                  nestedScrollEnabled
-                  useWebKit={true}
-                  originWhitelist={['*']}
-                  allowsInlineMediaPlayback={true}
-                />
-              ) : null}
-              
-            </View>
+            <ScrollView style={styles.scroll}>
+              <View style={styles.webview}>
+                {currentURL ? (
+                  <WebView
+                    ref={webViewRef}
+                    source={{uri: currentURL}}
+                    style={{
+                      marginTop: 22,
+                      flex: 1,
+                      margin: 'auto',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    allowsFullscreenVideo={false}
+                    onNavigationStateChange={({url, canGoBack}) => {
+                      setInputURl(url);
+                    }}
+                    scrollEnabled={true}
+                    nestedScrollEnabled
+                    useWebKit={true}
+                    originWhitelist={['*']}
+                    allowsInlineMediaPlayback={true}
+                  />
+                ) : null}
+              </View>
             </ScrollView>
           </View>
         )}
@@ -240,7 +261,17 @@ function DataRaw(props) {
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: {
+  reducer: {
+    needLoad: any;
+    content: any;
+    selector: any;
+    nextSelector: any;
+    limitSplit: any;
+    nextURL: any;
+    currentURL: any;
+  };
+}) => ({
   needLoad: state.reducer.needLoad,
   content: state.reducer.content,
   selector: state.reducer.selector,
@@ -252,52 +283,8 @@ const mapStateToProps = state => ({
 
 const ActionCreators = Object.assign({}, {loadNew, loadNewData, updateWebInfo});
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DataRaw);
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFF8ED',
-  },
-  subContainer: {
-    // flex: 1,
-    // width: '100%',
-    // height: 800,
-    backgroundColor: '#FFF8ED',
-  },
-  webview: {
-    display: 'flex',
-    width: '100%',
-    height: 600,
-    backgroundColor: '#FFF8ED',
-  },
-  scroll: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden'
-  },
-  view: {
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#FFF8ED',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

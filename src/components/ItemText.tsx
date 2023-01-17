@@ -1,7 +1,13 @@
-import {Text, FlatList} from 'native-base';
-import React, {memo} from 'react';
-import {Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
-import {PlaylistItem} from '../model/api';
+import {Text} from 'native-base';
+import React from 'react';
+import {
+  Dimensions,
+  ListRenderItemInfo,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import {PlaylistItem} from '@root/model/api';
+import { DEVICE_WIDTH } from '@root/constants/styles/DefaultStyle';
 
 type MyProps = {
   data: ListRenderItemInfo<PlaylistItem>;
@@ -49,7 +55,6 @@ class Item extends React.Component<MyProps> {
 
 export default Item;
 
-const {width: DEVICE_WIDTH, height: DEVICE_HEIGHT} = Dimensions.get('window');
 const styles = StyleSheet.create({
   list: {
     paddingVertical: 5,

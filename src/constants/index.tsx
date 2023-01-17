@@ -1,4 +1,37 @@
-import ConfigAPI from './ConfigAPI';
+import {ICON_LOOP_ALL_BUTTON, ICON_LOOP_ONE_BUTTON} from '@root/constants/Icon';
+import {PlaylistItem} from '@root/model/api';
+
+export const PlAYLIST = [
+  new PlaylistItem(
+    0,
+    'Comfort Fit - “Sorry”',
+    'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3',
+    false,
+  ),
+  new PlaylistItem(
+    1,
+    'Mildred Bailey – “All Of Me”',
+    'https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3',
+    false,
+  ),
+  new PlaylistItem(
+    2,
+    'Podington Bear - “Rubber Robot”',
+    'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3',
+    false,
+  ),
+];
+
+export const LOADING_STRING = '... loading ...';
+export const LOOPING_TYPE_ALL = 0;
+export const LOOPING_TYPE_ONE = 1;
+export const LOOPING_TYPE_ICONS = {
+  0: ICON_LOOP_ALL_BUTTON,
+  1: ICON_LOOP_ONE_BUTTON,
+};
+export const RATE_SCALE = 3.0;
+
+import { Api } from '@root/model/api';
 
 // {
 //   "Language":"vi-VN",
@@ -20,6 +53,12 @@ export const ApiDefault: Api = {
   body: '',
   method: 'POST',
   content: [],
+  token: '',
+  tokens: [],
+  header: JSON.stringify({
+    'Content-Type': 'application/json',
+    token: '',
+  }),
 };
 
 // {
@@ -49,6 +88,9 @@ export const ApiViettelDefault: Api = {
   }),
   method: 'POST',
   content: [],
+  token: '',
+  tokens: [],
+  urlAudio: ''
 };
 
 export const CONFIG_LIST = [
@@ -61,3 +103,5 @@ export const CONFIG_LIST = [
     config: ApiDefault,
   },
 ];
+
+export const MAX_LOAD_FILE_IN_TIME = 2;

@@ -1,11 +1,18 @@
 import React, {useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {loadNew, loadNewData, updateWebInfo} from '../redux/Actions';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import { cleanTmpFileCache } from '../helper/APIService';
+import {AnyAction, bindActionCreators, Dispatch} from 'redux';
+import {cleanTmpFileCache} from '@root/helper/APIService';
+import {loadNew, loadNewData, updateWebInfo} from '@root/redux/Actions';
 
-function Cacher(props) {
+function Cacher(props: {
+  actions?: any;
+  selector?: any;
+  nextSelector?: any;
+  limitSplit?: any;
+  currentURL?: any;
+  loadedConfig?: any;
+}) {
   const {selector, nextSelector, limitSplit, currentURL, loadedConfig} = props;
 
   useEffect(() => {
@@ -22,7 +29,7 @@ function Cacher(props) {
     }
   }, [selector, nextSelector, limitSplit, currentURL, loadedConfig]);
 
-  function updateWeb(obj) {
+  function updateWeb(obj: any) {
     props.actions.updateWebInfo({
       selector,
       nextSelector,
@@ -35,7 +42,7 @@ function Cacher(props) {
   async function loadHistory() {
     try {
       const dataConfig = await AsyncStorage.getItem('data_config');
-      const config = JSON.parse(dataConfig);
+      const config = JSON.parse(dataConfig || '');
       const copyConfig = Object.assign({loadedConfig: true}, config);
       updateWeb({...copyConfig});
       // console.log(
@@ -64,7 +71,16 @@ function Cacher(props) {
   return <></>;
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: {
+  reducer: {
+    selector: any;
+    nextSelector: any;
+    limitSplit: any;
+    nextURL: any;
+    currentURL: any;
+    loadedConfig: any;
+  };
+}) => ({
   selector: state.reducer.selector,
   nextSelector: state.reducer.nextSelector,
   limitSplit: state.reducer.limitSplit,
@@ -75,7 +91,7 @@ const mapStateToProps = state => ({
 
 const ActionCreators = Object.assign({}, {loadNew, loadNewData, updateWebInfo});
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 

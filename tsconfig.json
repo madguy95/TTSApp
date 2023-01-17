@@ -2,9 +2,26 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",     /* Recommended React Native TSConfig base */
   "compilerOptions": {
+    "jsx": "react",
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
 
     /* Completeness */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+    "skipLibCheck": true              ,                   /* Skip type checking all .d.ts files. */
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["es2015", "es2015.promise", "es2016.array.include", "dom"],
+    "strict": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "@root/*": ["src/*"]
+    },
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "target": "esnext",
+    "types": ["jest"]
+  },
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
 }

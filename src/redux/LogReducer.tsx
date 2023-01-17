@@ -1,4 +1,4 @@
-import {ADD_LOG} from './ActionType';
+import {ADD_LOG} from '@root/redux/ActionType';
 
 const initState = {
   errors: [],
@@ -7,7 +7,7 @@ const initState = {
 const logReducer = (state = initState, action: {type: any; payload: any}) => {
   switch (action.type) {
     case ADD_LOG:
-      const clone = [...state.errors];
+      const clone: Array<any> = [...state.errors];
       if (
         clone.unshift({
           date: new Date().toLocaleTimeString(),
