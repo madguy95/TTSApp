@@ -2,6 +2,8 @@ import {delay, objToQueryString} from '../utils';
 import {Api} from '../model/api';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {Platform} from 'react-native';
+import _ from 'lodash';
+
 const HTTP_STRING = {
   '200': 'OK',
   '201': 'Created',
@@ -45,6 +47,14 @@ const HTTP_STRING = {
   '504': 'Gateway Timeout',
   '505': 'HTTP Version Not Supported',
 };
+
+export function appendValueToKey(key, value, obj, ...fields) {
+  fields.forEach(field => {
+    if (obj[field] && _.isString(obj[field])) {
+      obj[field] = obj[field].replace(key, value);
+    }
+  });
+}
 export async function callApiGetMp3(
   text: string,
   signal: any,
@@ -121,7 +131,9 @@ const FOLDER_FILE =
 export async function downloadFile(
   text: string,
   id: string,
-  apiInfo: {body: string; header: string; method: string; url: string},
+  apiInfo: {
+    token: string;body: string; header: string; method: string; url: string
+},
 ) {
   // console.log(RNFetchBlob.fs.dirs.DocumentDir);
   const bodyStr = apiInfo.body
@@ -130,7 +142,7 @@ export async function downloadFile(
         .replace('${textsearch}', text.replace(/['"]+/g, ''))
     : '';
     
-  if (apiInfo.header?.includes("${token}")) {
+  if (apiInfo.header?.includes("${token}") && apiInfo.token) {
     apiInfo.header = apiInfo.header.replace('${token}', apiInfo.token);
   }
   const header = JSON.parse(apiInfo.header) || {

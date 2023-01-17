@@ -2,18 +2,24 @@ import React from 'react';
 import {
   Button,
   Center,
+  IconButton,
   Modal,
   ScrollView,
   Text,
   TextArea,
+  View,
   VStack,
 } from 'native-base';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import _ from 'lodash';
 
 function ModalToken(props) {
-  const { saveData } = props
+  const {saveData} = props;
   const [modalVisible, setModalVisible] = React.useState(false);
   const [size, setSize] = React.useState('md');
-  const [data, setData] = React.useState('');
+  const [data, setData] = React.useState(
+    _.isArray(props.data) ? _.join(props.data, '\n') : '',
+  );
 
   const handleSizeClick = newSize => {
     setSize(newSize);
@@ -25,9 +31,17 @@ function ModalToken(props) {
     saveData([...new Set(data.split(/\n|\r|^--/m).filter(element => element))]);
   };
 
+  const close = () => {
+    setModalVisible(false);
+    setData(_.isArray(props.data) ? _.join(props.data, '\n') : '')
+  }
+
   return (
-    <>
-      <Modal isOpen={modalVisible} onClose={setModalVisible} size={size}>
+    <View {...props}>
+      <Modal
+        isOpen={modalVisible}
+        onClose={close}
+        size={size}>
         <Modal.Content maxH="420">
           <Modal.CloseButton />
           <Modal.Header>List Token</Modal.Header>
@@ -45,27 +59,34 @@ function ModalToken(props) {
               <Button
                 variant="ghost"
                 colorScheme="blueGray"
-                onPress={() => {
-                  setModalVisible(false);
-                }}>
+                onPress={close}>
                 Cancel
               </Button>
-              <Button onPress={save}>Save</Button>
+              <Button colorScheme={'gray'} onPress={save}>
+                Save
+              </Button>
             </Button.Group>
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <VStack space={2} w={40}>
+      <VStack space={2}>
         {['full'].map(size => {
           return (
-            <Button
+            <IconButton
+              size={'sm'}
+              variant="solid"
+              _icon={{
+                as: Ionicons,
+                name: 'download-outline',
+              }}
               colorScheme={'gray'}
               onPress={() => handleSizeClick(size)}
-              key={size}>{`Import Tokens`}</Button>
+              key={size}
+            />
           );
         })}
       </VStack>
-    </>
+    </View>
   );
 }
 

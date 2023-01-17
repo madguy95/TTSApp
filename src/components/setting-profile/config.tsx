@@ -37,7 +37,7 @@ export const ApiViettelDefault: Api = {
   queryString: '',
   header: JSON.stringify({
     'Content-Type': 'application/json',
-    token: '',
+    token: '${token}',
   }),
   body: JSON.stringify({
     text: '${textsearch}',

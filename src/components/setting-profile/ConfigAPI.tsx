@@ -211,22 +211,26 @@ function ConfigAPI(props: { name: unknown; config: React.SetStateAction<Api>; })
                 <Stack mx={4}>
                   <Flex direction="row">
                     <FormControl.Label>List Token</FormControl.Label>
+                    <ModalToken
+                    m={1}
+                    data={api.tokens}
+                    saveData={(data: any) =>
+                      setApi({...api, tokens: data})
+                    }></ModalToken>
                     {/* <StaggerCop
                   ml={1}
                   onPress={() =>
                     setApi({...api, header: props.config.header})
                   }></StaggerCop> */}
                   </Flex>
-                  <ModalToken
-                    saveData={(data: any) =>
-                      setApi({...api, tokens: data})
-                    }></ModalToken>
                   <Select
                     minWidth="200"
                     accessibilityLabel="Choose token"
                     placeholder="Choose token"
                     selectedValue={api.token}
-                    onValueChange={value => setApi({...api, token: value})}
+                    onValueChange={value => {
+                      setApi({...api, token: value})
+                    }}
                     _selectedItem={{
                       bg: 'teal.600',
                       endIcon: <CheckIcon size={5} />,
