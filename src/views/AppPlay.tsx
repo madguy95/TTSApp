@@ -700,7 +700,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
               value={1}
               onValueChange={this._onVolumeSliderValueChange}
             />
-            <Text>{Math.floor(this.state.volume * 100)}</Text>
+            <Text style={[styles.text]}>{Math.floor(this.state.volume * 100)}</Text>
           </View>
           <TouchableHighlight
             underlayColor={BACKGROUND_COLOR}
@@ -740,7 +740,7 @@ class AppPlay extends React.Component<MyProps | never, MyState> {
             value={this.state.rate / RATE_SCALE}
             onSlidingComplete={this._onRateSliderSlidingComplete}
           />
-          <Text>{this.state.rate?.toFixed(2)}</Text>
+          <Text style={[styles.text]}>{this.state.rate?.toFixed(2)}</Text>
           <TouchableHighlight
             underlayColor={BACKGROUND_COLOR}
             style={styles.wrapper}
