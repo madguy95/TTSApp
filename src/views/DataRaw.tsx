@@ -34,7 +34,7 @@ function DataRaw(props: {
   const [inputURL, setInputURl] = React.useState(currentURL);
   const gridIframe = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = React.useState(false);
-  const [limit, setLimit] = React.useState(limitSplit);
+  const [limit, setLimit] = React.useState<string>(limitSplit + '');
   const webViewRef = useRef<any>(null);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function DataRaw(props: {
 
   useEffect(() => {
     setLimit(limitSplit);
-    console.log(limitSplit)
+    // console.log(limitSplit)
   }, [limitSplit]);
   
   function updateWeb(obj: {
@@ -126,9 +126,9 @@ function DataRaw(props: {
                 type="text"
                 value={limit}
                 onChangeText={value => setLimit(value)}
-                onSubmitEditing={event => {
+                onSubmitEditing={() => {
                   updateWeb({
-                    limitSplit: !isNaN(limit) ? parseInt(limit) : 500,
+                    limitSplit: _.isNumber(limit) ? parseInt(limit) : 500,
                   });
                 }}
                 placeholder="limit string length to split"

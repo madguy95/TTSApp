@@ -54,7 +54,7 @@ function DataBatch(props: {
           // downloading parallel mutil files
           arrPromise.length < 1
         ) {
-          if (item.uri == null || item.uri == undefined || item.uri == '') {
+          if (item.uri == null || item.uri == undefined || item.uri == '' || item.uri == 'errorsound.mp3') {
             arrPromise.push(tranferTTS(data, item.name, index, indexCurrent * 1000));
             arrIndex.push(index);
           }
@@ -71,7 +71,9 @@ function DataBatch(props: {
             playList[arrIndex[index]].uri = processResult(data, res);
             isChange = true;
           } else {
+            playList[arrIndex[index]].uri = 'errorsound.mp3';
             actions?.addLog(res?.message);
+            props.setPlayList(playList);
           }
         });
         if (isChange) {

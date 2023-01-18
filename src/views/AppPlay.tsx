@@ -145,6 +145,7 @@ class AppPlay extends React.Component<MyProps | any, MyState | any> {
       this.props.arrString.forEach((item: string, index: number) => {
         arrPlay.push(new PlaylistItem(index, item, '', false));
       });
+      arrPlay.push(new PlaylistItem(this.props.arrString.length, 'Hết chương rồi nhé, sẽ tải chương tiếp theo. ', 'endchap.mp3', false));
       // if (JSON.stringify(arrPlay) != JSON.stringify(this.state.playList)) {
       this.playList = arrPlay;
       this.index = 0;
@@ -178,6 +179,10 @@ class AppPlay extends React.Component<MyProps | any, MyState | any> {
         if (this.state.loopingType == LOOPING_TYPE_ALL) {
           this.setState({playState: 'paused'});
           this.playbackInstance.setCurrentTime(0);
+          if (this.playList[this.index]?.uri == 'errorsound.mp3') {
+            this.setState({isPlaying: false});
+            return;
+          }
           if (this.state.isPlaying && this.index == this.playList.length - 1) {
             console.log('call load new data');
             this.props.actions.loadNewData(

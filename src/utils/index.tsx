@@ -62,7 +62,7 @@ export function truncate(str: string, arrStr: any[], n: number): any {
       arr.forEach(x => {
         str += ($(x).text() + " ." || "").trim();
       })
-      return str + ". Hết chương rồi nhé, sẽ tải chương tiếp theo.";
+      return str;
     }
     return "";
   }
